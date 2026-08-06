@@ -183,6 +183,10 @@
             border-bottom: none;
         }
 
+        .suggestion-item:active, .suggestion-item.active {
+            background: #334155;
+        }
+
         .group-tag {
             font-size: 12px;
             font-weight: 700;
@@ -225,7 +229,7 @@
             padding: 14px;
             border-radius: 12px;
             border: none;
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 700;
             cursor: pointer;
             display: flex;
@@ -249,12 +253,7 @@
             background: linear-gradient(135deg, #16a34a, #15803d);
             color: white;
             box-shadow: 0 4px 14px rgba(22, 163, 74, 0.4);
-        }
-
-        .btn-pdf {
-            background: linear-gradient(135deg, #0284c7, #0369a1);
-            color: white;
-            box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4);
+            margin-bottom: 12px;
         }
 
         .btn-secondary {
@@ -334,88 +333,9 @@
             font-size: 11px;
             font-weight: bold;
         }
-
-        .action-buttons-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-
-        /* PRINT / PDF STYLES */
-        @media print {
-            body {
-                background-color: #ffffff !important;
-                color: #000000 !important;
-                padding: 0 !important;
-                max-width: 100% !important;
-            }
-
-            header, .settings-drawer, .btn, .btn-secondary, .autocomplete-wrapper, .group-banner, .form-grid, .action-buttons-row, .card-title button, #syncStatus {
-                display: none !important;
-            }
-
-            .card {
-                background: #ffffff !important;
-                border: none !important;
-                box-shadow: none !important;
-                padding: 0 !important;
-                margin: 0 !important;
-            }
-
-            .print-header {
-                display: block !important;
-                text-align: center;
-                margin-bottom: 20px;
-                border-bottom: 2px solid #000;
-                padding-bottom: 10px;
-            }
-
-            .print-header h2 {
-                font-size: 18pt;
-                margin-bottom: 4px;
-            }
-
-            .print-header p {
-                font-size: 11pt;
-                color: #333;
-            }
-
-            .log-table {
-                width: 100% !important;
-                border: 1px solid #000 !important;
-                font-size: 10pt !important;
-            }
-
-            .log-table th, .log-table td {
-                border: 1px solid #000 !important;
-                color: #000 !important;
-                padding: 6px !important;
-            }
-
-            .group-tag {
-                background: none !important;
-                border: 1px solid #000 !important;
-                color: #000 !important;
-            }
-
-            .action-col {
-                display: none !important;
-            }
-        }
-
-        .print-header {
-            display: none;
-        }
     </style>
 </head>
 <body>
-
-    <!-- Formal Header for Printable/PDF Report -->
-    <div class="print-header">
-        <h2>ПРОТОКОЛ ТЕХНИЧЕСКОЙ ИНСПЕКЦИИ (ТИ)</h2>
-        <p id="printHeaderMeta">Мероприятие: Трек День | Дата: --.--.----</p>
-    </div>
 
     <header>
         <div class="logo-area">
@@ -434,15 +354,16 @@
     <div class="card">
         <div class="card-title">
             <span> Мероприятие и дата</span>
-            <button class="btn-secondary" onclick="toggleSettings()">⚙️ Настройки Таблицы</button>
+            <button class="btn-secondary" onclick="toggleSettings()">⚙️ Настройки Гугл-Таблицы</button>
         </div>
         
+        <!-- Settings drawer for Google Apps Script URL -->
         <div id="settingsDrawer" class="settings-drawer">
             <div class="form-group">
                 <label>URL Google Apps Script (для онлайн-синхронизации):</label>
                 <input type="text" id="gasUrlInput" placeholder="https://script.google.com/macros/s/.../exec" onchange="saveGasUrl()">
                 <div style="font-size: 11px; color: var(--text-sub); margin-top: 4px;">
-                    Вставьте URL развернутого Web App. Новые даты автоматически создадут вкладки типа "05.08" в вашей Гугл-Таблице!
+                    Вставьте URL развернутого Web App для работы с онлайн таблицей в реальном времени несколькими контролерами.
                 </div>
             </div>
         </div>
@@ -459,7 +380,7 @@
             </div>
             <div class="form-group">
                 <label>Дата проведения:</label>
-                <input type="date" id="eventDate" onchange="onDateChanged()">
+                <input type="date" id="eventDate">
             </div>
         </div>
     </div>
@@ -469,7 +390,7 @@
         <div class="card-title">📋 Прохождение ТИ (Входной контроль)</div>
 
         <div class="form-group full autocomplete-wrapper">
-            <label>Поиск / Выбор автомобиля (марка, модель или транслит):</label>
+            <label>Поиск / Выбор автомобиля (начните вводить марку, модель или транслит):</label>
             <input type="text" id="carInput" placeholder="Например: Porsh, БМВ, Калина, Supra, 911..." autocomplete="off">
             <div id="suggestions" class="suggestions-list"></div>
         </div>
@@ -529,14 +450,9 @@
             <span class="badge-count" id="totalCarsCount">0</span>
         </div>
 
-        <div class="action-buttons-row">
-            <button class="btn btn-share" onclick="shareParticipantList()">
-                📲 Поделиться
-            </button>
-            <button class="btn btn-pdf" onclick="exportToPDF()">
-                📄 PDF / Печать
-            </button>
-        </div>
+        <button class="btn btn-share" onclick="shareParticipantList()">
+            📲 Поделиться списком участников (Рейс Контроль)
+        </button>
 
         <div class="stats-bar" id="statsBar">
             <div class="stat-chip">Всего: <span id="statTotal">0</span></div>
@@ -554,7 +470,7 @@
                         <th>Пилот</th>
                         <th>СТ№</th>
                         <th>Группа</th>
-                        <th class="action-col">Действие</th>
+                        <th>Действие</th>
                     </tr>
                 </thead>
                 <tbody id="logTableBody">
@@ -569,6 +485,7 @@
     </div>
 
     <script>
+        // Catalog loaded from Google Sheets "Справочник_Авто"
         const CAR_CATALOG = [
   {
     "brand": "GT4 AMG",
@@ -748,11 +665,13 @@
   }
 ];
 
+        // Transliteration map for smart fuzzy search (Cyrillic <-> Latin)
         const TRANSLIT_MAP = {
             'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'yo', 'ж': 'zh',
             'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o',
             'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 'ф': 'f', 'х': 'h', 'ц': 'ts',
             'ч': 'ch', 'ш': 'sh', 'щ': 'sch', 'ы': 'y', 'э': 'e', 'ю': 'yu', 'я': 'ya',
+            // Brand phonetic aliases
             'порш': 'porsche', 'порше': 'porsche', 'бмв': 'bmw', 'ауди': 'audi', 'тойота': 'toyota',
             'мерседес': 'mercedes', 'мерс': 'mercedes', 'хонда': 'honda', 'шкода': 'skoda',
             'субару': 'subaru', 'ниссан': 'nissan', 'киа': 'kia', 'лада': 'lada', 'калина': 'kalina',
@@ -763,7 +682,9 @@
         let dailyLog = [];
         let gasScriptUrl = localStorage.getItem('gas_script_url') || '';
 
+        // Initialize Application
         document.addEventListener('DOMContentLoaded', () => {
+            // Set today's date in local ISO format
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('eventDate').value = today;
 
@@ -777,14 +698,6 @@
 
             setupAutocomplete();
         });
-
-        function onDateChanged() {
-            if (gasScriptUrl) {
-                fetchLogsFromGoogleSheet();
-            } else {
-                loadLocalLog();
-            }
-        }
 
         function toggleSettings() {
             document.getElementById('settingsDrawer').classList.toggle('open');
@@ -823,13 +736,16 @@
             }
         }
 
+        // Phonetic normalize function
         function normalizeString(str) {
             let s = str.toLowerCase().trim();
+            // Replace full word aliases
             for (let k in TRANSLIT_MAP) {
                 if (k.length > 2 && s.includes(k)) {
                     s = s.replace(new RegExp(k, 'g'), TRANSLIT_MAP[k]);
                 }
             }
+            // Char by char transliteration
             let res = '';
             for (let char of s) {
                 res += TRANSLIT_MAP[char] || char;
@@ -837,6 +753,7 @@
             return res.replace(/[^a-z0-9]/g, '');
         }
 
+        // Autocomplete setup
         function setupAutocomplete() {
             const input = document.getElementById('carInput');
             const suggestionsEl = document.getElementById('suggestions');
@@ -858,7 +775,8 @@
                 });
 
                 if (filtered.length === 0) {
-                    suggestionsEl.innerHTML = `<div class="suggestion-item" onclick="selectCar('${val.replace(/'/g, "'")}', 'C')">
+                    // Fallback to unknown brand search
+                    suggestionsEl.innerHTML = `<div class="suggestion-item" onclick="selectCar('${val.replace(/'/g, "\'")}', 'C')">
                         <div>➕ Добавить "${val}"</div>
                         <span class="group-tag group-C">По умалч. C</span>
                     </div>`;
@@ -867,7 +785,7 @@
                 }
 
                 suggestionsEl.innerHTML = filtered.map(item => `
-                    <div class="suggestion-item" onclick="selectCar('${item.brand.replace(/'/g, "'")}', '${item.group}')">
+                    <div class="suggestion-item" onclick="selectCar('${item.brand.replace(/'/g, "\'")}', '${item.group}')">
                         <div><strong>${item.brand}</strong></div>
                         <span class="group-tag group-${item.group}">Группа ${item.group}</span>
                     </div>
@@ -887,6 +805,7 @@
             document.getElementById('carInput').value = brand;
             document.getElementById('suggestions').style.display = 'none';
             
+            // Set Group display
             const groupDisplay = document.getElementById('groupDisplay');
             groupDisplay.textContent = group;
             groupDisplay.className = `group-banner-val group-tag group-${group}`;
@@ -929,6 +848,7 @@
             renderLogTable();
             clearInputs();
 
+            // Sync to Google Sheet if configured
             if (gasScriptUrl) {
                 syncCarToGoogleSheet(newItem);
             } else {
@@ -977,7 +897,7 @@
                     <td>${item.driver}</td>
                     <td><span style="background: #334155; padding: 2px 6px; border-radius: 4px; font-weight: bold;">№${item.number}</span></td>
                     <td><span class="group-tag group-${item.group}">${item.group}</span></td>
-                    <td class="action-col"><button style="background: none; border: none; color: #ef4444; font-size: 16px; cursor: pointer;" onclick="deleteCar(${item.id})">🗑️</button></td>
+                    <td><button style="background: none; border: none; color: #ef4444; font-size: 16px; cursor: pointer;" onclick="deleteCar(${item.id})">🗑️</button></td>
                 </tr>
             `).join('');
         }
@@ -991,24 +911,20 @@
         }
 
         function saveLocalLog() {
-            const date = document.getElementById('eventDate').value;
-            localStorage.setItem(`daily_ti_log_${date}`, JSON.stringify(dailyLog));
+            localStorage.setItem('daily_ti_log', JSON.stringify(dailyLog));
         }
 
         function loadLocalLog() {
-            const date = document.getElementById('eventDate').value;
-            const stored = localStorage.getItem(`daily_ti_log_${date}`);
+            const stored = localStorage.getItem('daily_ti_log');
             if (stored) {
                 try {
                     dailyLog = JSON.parse(stored);
                     renderLogTable();
-                } catch (e) { dailyLog = []; }
-            } else {
-                dailyLog = [];
-                renderLogTable();
+                } catch (e) {}
             }
         }
 
+        // Web Share API to share with Race Control (Рейс Контроль)
         function shareParticipantList() {
             const eventType = document.getElementById('eventType').value;
             const eventDate = document.getElementById('eventDate').value;
@@ -1018,23 +934,16 @@
                 return;
             }
 
-            let text = `🏁 *СПИСОК УЧАСТНИКОВ ТИ* 🏁
-`;
-            text += `Мероприятие: ${eventType}
-`;
-            text += `Дата: ${eventDate}
-`;
-            text += `Всего авто: ${dailyLog.length}
-
-`;
+            let text = `🏁 *СПИСОК УЧАСТНИКОВ ТИ* 🏁\n`;
+            text += `Мероприятие: ${eventType}\n`;
+            text += `Дата: ${eventDate}\n`;
+            text += `Всего авто: ${dailyLog.length}\n\n`;
 
             dailyLog.slice().reverse().forEach((item, index) => {
-                text += `${index + 1}. №${item.number} | ${item.car} | ${item.driver} | Гр. ${item.group}
-`;
+                text += `${index + 1}. №${item.number} | ${item.car} | ${item.driver} | Гр. ${item.group}\n`;
             });
 
-            text += `
-⚡ Сформировано в приложении Техконтроль ТИ`;
+            text += `\n⚡ Сформировано в приложении Техконтроль ТИ`;
 
             if (navigator.share) {
                 navigator.share({
@@ -1048,18 +957,6 @@
             }
         }
 
-        function exportToPDF() {
-            const eventType = document.getElementById('eventType').value;
-            const eventDate = document.getElementById('eventDate').value;
-
-            // Formating date DD.MM.YYYY
-            const parts = eventDate.split('-');
-            const formattedDate = parts.length === 3 ? `${parts[2]}.${parts[1]}.${parts[0]}` : eventDate;
-
-            document.getElementById('printHeaderMeta').textContent = `Мероприятие: ${eventType} | Дата: ${formattedDate} | Всего авто: ${dailyLog.length}`;
-            window.print();
-        }
-
         function copyToClipboard(text) {
             navigator.clipboard.writeText(text).then(() => {
                 alert('Список скопирован в буфер обмена! Можете вставить его в чат Рейс Контроля.');
@@ -1068,6 +965,7 @@
             });
         }
 
+        // Google Sheets API Syncing functions
         function syncCarToGoogleSheet(item) {
             updateSyncStatus('syncing', 'Сохранение...');
             fetch(gasScriptUrl, {
