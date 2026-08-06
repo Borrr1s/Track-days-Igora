@@ -81,14 +81,15 @@
 
         .sync-badge {
             font-size: 11px;
-            padding: 4px 8px;
+            padding: 5px 10px;
             border-radius: 20px;
-            background: #14532d;
-            color: #4ade80;
-            border: 1px solid #22c55e;
+            background: #334155;
+            color: #94a3b8;
+            border: 1px solid #475569;
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
+            cursor: pointer;
         }
 
         .card {
@@ -183,23 +184,44 @@
             border-bottom: none;
         }
 
-        .suggestion-item:active, .suggestion-item.active {
-            background: #334155;
-        }
-
         .group-tag {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 700;
-            padding: 3px 8px;
+            padding: 4px 8px;
             border-radius: 6px;
             text-transform: uppercase;
+            background: #334155;
+            color: #38bdf8;
+            border: 1px solid #0284c7;
         }
 
-        .group-A { background: #1e3a8a; color: #93c5fd; border: 1px solid #3b82f6; }
-        .group-B { background: #7c2d12; color: #fdba74; border: 1px solid #f97316; }
-        .group-C { background: #581c87; color: #f0abfc; border: 1px solid #c084fc; }
-        .group-TCR { background: #831843; color: #fbcfe8; border: 1px solid #f43f5e; }
-        .group-GT4 { background: #14532d; color: #86efac; border: 1px solid #22c55e; }
+        /* Multi-select chips for assigning groups */
+        .chips-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .group-chip {
+            background: #0f172a;
+            border: 1px solid var(--border-color);
+            color: var(--text-sub);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+            transition: all 0.15s ease;
+        }
+
+        .group-chip.active {
+            background: #0284c7;
+            color: #ffffff;
+            border-color: #38bdf8;
+            box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);
+        }
 
         .group-banner {
             display: flex;
@@ -219,7 +241,7 @@
         }
 
         .group-banner-val {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 800;
             color: #38bdf8;
         }
@@ -229,7 +251,7 @@
             padding: 14px;
             border-radius: 12px;
             border: none;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
             cursor: pointer;
             display: flex;
@@ -253,7 +275,12 @@
             background: linear-gradient(135deg, #16a34a, #15803d);
             color: white;
             box-shadow: 0 4px 14px rgba(22, 163, 74, 0.4);
-            margin-bottom: 12px;
+        }
+
+        .btn-pdf {
+            background: linear-gradient(135deg, #0284c7, #0369a1);
+            color: white;
+            box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4);
         }
 
         .btn-secondary {
@@ -263,6 +290,7 @@
             font-size: 12px;
             width: auto;
             border-radius: 8px;
+            border: 1px solid var(--border-color);
         }
 
         .log-table {
@@ -308,6 +336,23 @@
             color: var(--accent);
         }
 
+        .filter-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #0f172a;
+            padding: 10px 12px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 12px;
+        }
+
+        .filter-container label {
+            white-space: nowrap;
+            color: var(--accent);
+            font-weight: bold;
+        }
+
         .settings-drawer {
             display: none;
             background: var(--card-bg);
@@ -325,17 +370,96 @@
             background: var(--accent);
             color: #0f172a;
             border-radius: 50%;
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 11px;
+            font-size: 12px;
             font-weight: bold;
+        }
+
+        .action-buttons-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        /* PRINT / PDF STYLES */
+        @media print {
+            body {
+                background-color: #ffffff !important;
+                color: #000000 !important;
+                padding: 0 !important;
+                max-width: 100% !important;
+            }
+
+            header, .settings-drawer, .btn, .btn-secondary, .autocomplete-wrapper, .group-banner, .form-grid, .action-buttons-row, .card-title button, #syncStatus, .filter-container, .chips-container {
+                display: none !important;
+            }
+
+            .card {
+                background: #ffffff !important;
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            .print-header {
+                display: block !important;
+                text-align: center;
+                margin-bottom: 20px;
+                border-bottom: 2px solid #000;
+                padding-bottom: 10px;
+            }
+
+            .print-header h2 {
+                font-size: 18pt;
+                margin-bottom: 4px;
+            }
+
+            .print-header p {
+                font-size: 11pt;
+                color: #333;
+            }
+
+            .log-table {
+                width: 100% !important;
+                border: 1px solid #000 !important;
+                font-size: 10pt !important;
+            }
+
+            .log-table th, .log-table td {
+                border: 1px solid #000 !important;
+                color: #000 !important;
+                padding: 6px !important;
+            }
+
+            .group-tag {
+                background: none !important;
+                border: 1px solid #000 !important;
+                color: #000 !important;
+            }
+
+            .action-col {
+                display: none !important;
+            }
+        }
+
+        .print-header {
+            display: none;
         }
     </style>
 </head>
 <body>
+
+    <!-- Printable Header -->
+    <div class="print-header">
+        <h2>ПРОТОКОЛ ТЕХНИЧЕСКОЙ ИНСПЕКЦИИ (ТИ)</h2>
+        <p id="printHeaderMeta">Мероприятие: Трек День | Дата: --.--.----</p>
+    </div>
 
     <header>
         <div class="logo-area">
@@ -345,8 +469,8 @@
                 <div class="subtitle">Приложение инспектора</div>
             </div>
         </div>
-        <div id="syncStatus" class="sync-badge">
-            <span id="syncIcon">●</span> <span id="syncText">Автономно</span>
+        <div id="syncStatus" class="sync-badge" onclick="testConnection()">
+            <span id="syncIcon">●</span> <span id="syncText">Проверить связь</span>
         </div>
     </header>
 
@@ -354,33 +478,34 @@
     <div class="card">
         <div class="card-title">
             <span> Мероприятие и дата</span>
-            <button class="btn-secondary" onclick="toggleSettings()">⚙️ Настройки Гугл-Таблицы</button>
+            <button class="btn-secondary" onclick="toggleSettings()">⚙️ Настройки Таблицы</button>
         </div>
         
-        <!-- Settings drawer for Google Apps Script URL -->
         <div id="settingsDrawer" class="settings-drawer">
             <div class="form-group">
                 <label>URL Google Apps Script (для онлайн-синхронизации):</label>
                 <input type="text" id="gasUrlInput" placeholder="https://script.google.com/macros/s/.../exec" onchange="saveGasUrl()">
-                <div style="font-size: 11px; color: var(--text-sub); margin-top: 4px;">
-                    Вставьте URL развернутого Web App для работы с онлайн таблицей в реальном времени несколькими контролерами.
+                <div style="font-size: 11px; color: var(--text-sub); margin-top: 6px; line-height: 1.4;">
+                    <strong>Инструкция по развертыванию:</strong><br>
+                    1. В Google Таблице перейдите в <em>Расширения ➔ Apps Script</em> и вставьте код.<br>
+                    2. Нажмите <em>Развернуть ➔ Управление развертываниями ➔ Версия: "Новая версия"</em>.<br>
+                    3. Права доступа: <strong>"Все" (Anyone)</strong>.<br>
+                    4. Скопируйте URL и вставьте сюда.
                 </div>
             </div>
         </div>
 
         <div class="form-grid">
             <div class="form-group">
-                <label>Тип заезда:</label>
-                <select id="eventType">
+                <label>Режим работы (Мероприятие):</label>
+                <select id="eventType" onchange="onEventTypeChanged()">
                     <option value="Трек день" selected>Трек день</option>
                     <option value="Соревнования">Соревнования</option>
-                    <option value="Рейс такси">Рейс такси</option>
-                    <option value="Мастер класс">Мастер класс</option>
                 </select>
             </div>
             <div class="form-group">
                 <label>Дата проведения:</label>
-                <input type="date" id="eventDate">
+                <input type="date" id="eventDate" onchange="onDateChanged()">
             </div>
         </div>
     </div>
@@ -390,15 +515,15 @@
         <div class="card-title">📋 Прохождение ТИ (Входной контроль)</div>
 
         <div class="form-group full autocomplete-wrapper">
-            <label>Поиск / Выбор автомобиля (начните вводить марку, модель или транслит):</label>
-            <input type="text" id="carInput" placeholder="Например: Porsh, БМВ, Калина, Supra, 911..." autocomplete="off">
+            <label>Поиск / Выбор автомобиля (марка, модель или транслит):</label>
+            <input type="text" id="carInput" placeholder="Например: Porsh, БМВ, Калина, Supra, GT4..." autocomplete="off">
             <div id="suggestions" class="suggestions-list"></div>
         </div>
 
         <div class="group-banner">
             <div>
-                <div class="group-banner-text">Группа из Справочника:</div>
-                <div style="font-size: 11px; color: var(--text-sub);" id="groupSourceNote">Автоматическое определение</div>
+                <div class="group-banner-text">Рекомендуемая Группа:</div>
+                <div style="font-size: 11px; color: var(--text-sub);" id="groupSourceNote">Из Справочника Авто</div>
             </div>
             <div id="groupDisplay" class="group-banner-val">—</div>
         </div>
@@ -420,21 +545,18 @@
                 <label>№ Бокса (если есть):</label>
                 <input type="text" id="boxInput" placeholder="15 бокс">
             </div>
+            
+            <!-- Multi-group selection chips -->
             <div class="form-group full">
-                <label>Замечания ТИ / Назначенная группа:</label>
-                <div style="display: flex; gap: 8px;">
-                    <select id="assignedGroupSelect" style="flex: 1;">
-                        <option value="A">Группа A</option>
-                        <option value="B">Группа B</option>
-                        <option value="C">Группа C</option>
-                        <option value="GT4">Группа GT4</option>
-                        <option value="TCR">Группа TCR</option>
-                        <option value="Юниор">Юниор</option>
-                        <option value="T/L">T/L</option>
-                        <option value="S/P">S/P</option>
-                    </select>
-                    <input type="text" id="notesInput" placeholder="Замечания (напр. СПТ, шлем)" style="flex: 2;">
+                <label>Выбранные Группы ТИ (можно выбрать несколько):</label>
+                <div id="groupChipsContainer" class="chips-container">
+                    <!-- Populated dynamically -->
                 </div>
+            </div>
+
+            <div class="form-group full">
+                <label>Замечания ТИ:</label>
+                <input type="text" id="notesInput" placeholder="Замечания (напр. СПТ, шлем)">
             </div>
         </div>
 
@@ -450,15 +572,27 @@
             <span class="badge-count" id="totalCarsCount">0</span>
         </div>
 
-        <button class="btn btn-share" onclick="shareParticipantList()">
-            📲 Поделиться списком участников (Рейс Контроль)
-        </button>
+        <div class="action-buttons-row">
+            <button class="btn btn-share" onclick="shareParticipantList()">
+                📲 Поделиться
+            </button>
+            <button class="btn btn-pdf" onclick="exportToPDF()">
+                📄 PDF / Печать
+            </button>
+        </div>
+
+        <div class="filter-container">
+            <label for="tableGroupFilter">🔍 Показать группу:</label>
+            <select id="tableGroupFilter" onchange="renderLogTable()">
+                <option value="ALL" selected>Все группы (без фильтра)</option>
+            </select>
+        </div>
 
         <div class="stats-bar" id="statsBar">
             <div class="stat-chip">Всего: <span id="statTotal">0</span></div>
-            <div class="stat-chip">Группа A: <span id="statA">0</span></div>
-            <div class="stat-chip">Группа B: <span id="statB">0</span></div>
-            <div class="stat-chip">Группа C: <span id="statC">0</span></div>
+            <div class="stat-chip" id="statChip1">Группа A: <span id="statVal1">0</span></div>
+            <div class="stat-chip" id="statChip2">Группа B: <span id="statVal2">0</span></div>
+            <div class="stat-chip" id="statChip3">Группа C: <span id="statVal3">0</span></div>
         </div>
 
         <div style="overflow-x: auto;">
@@ -470,7 +604,7 @@
                         <th>Пилот</th>
                         <th>СТ№</th>
                         <th>Группа</th>
-                        <th>Действие</th>
+                        <th class="action-col">Действие</th>
                     </tr>
                 </thead>
                 <tbody id="logTableBody">
@@ -485,193 +619,249 @@
     </div>
 
     <script>
-        // Catalog loaded from Google Sheets "Справочник_Авто"
         const CAR_CATALOG = [
   {
     "brand": "GT4 AMG",
-    "group": "A"
+    "track_group": "A",
+    "comp_group": "GT4"
   },
   {
     "brand": "GT4 BMW M4",
-    "group": "A"
+    "track_group": "A",
+    "comp_group": "GT4"
   },
   {
     "brand": "GT4 Supra",
-    "group": "A"
+    "track_group": "A",
+    "comp_group": "GT4"
   },
   {
     "brand": "GT 4 Audi R8",
-    "group": "A"
+    "track_group": "A",
+    "comp_group": "GT4"
   },
   {
-    "brand": "GT4 Porshce",
-    "group": "A"
+    "brand": "GT4 Porsche",
+    "track_group": "A",
+    "comp_group": "GT4"
   },
   {
-    "brand": "GT4 KMT X-Bow",
-    "group": "A"
+    "brand": "GT4 KTM X-Bow",
+    "track_group": "A",
+    "comp_group": "GT4"
   },
   {
     "brand": "Porsche 911 carrera s",
-    "group": "A"
+    "track_group": "A",
+    "comp_group": "GT4"
   },
   {
     "brand": "Porsche cayman GTS",
-    "group": "A"
+    "track_group": "A",
+    "comp_group": "GT4"
   },
   {
     "brand": "BMW M4",
-    "group": "A"
+    "track_group": "A",
+    "comp_group": "GT4"
   },
   {
     "brand": "TCR Cupra",
-    "group": "A"
+    "track_group": "A",
+    "comp_group": "TCR"
   },
   {
     "brand": "TCR Elantra",
-    "group": "A"
+    "track_group": "A",
+    "comp_group": "TCR"
   },
   {
     "brand": "TCR Lada",
-    "group": "A"
+    "track_group": "A",
+    "comp_group": "TCR"
   },
   {
     "brand": "TCR Audi RS3 LMC",
-    "group": "A"
+    "track_group": "A",
+    "comp_group": "TCR"
   },
   {
     "brand": "TCR i30N",
-    "group": "A"
+    "track_group": "A",
+    "comp_group": "TCR"
   },
   {
     "brand": "BMW M2",
-    "group": "B"
+    "track_group": "B",
+    "comp_group": "SP"
   },
   {
     "brand": "Subaru Impreza WRX STI",
-    "group": "B"
+    "track_group": "B",
+    "comp_group": "SP"
   },
   {
     "brand": "Mitsubishi Lancer Evolution",
-    "group": "B"
+    "track_group": "B",
+    "comp_group": "SP"
   },
   {
     "brand": "Toyota GR Yaris",
-    "group": "B"
+    "track_group": "B",
+    "comp_group": "SP"
   },
   {
     "brand": "Ford Focus RS",
-    "group": "B"
+    "track_group": "B",
+    "comp_group": "SP"
   },
   {
     "brand": "VW Golf R",
-    "group": "B"
+    "track_group": "B",
+    "comp_group": "SP"
   },
   {
     "brand": "Honda S2000",
-    "group": "B"
+    "track_group": "B",
+    "comp_group": "SP"
   },
   {
     "brand": "Mazda MX-5",
-    "group": "C"
+    "track_group": "C",
+    "comp_group": "TL"
   },
   {
     "brand": "Honda Civic Type R",
-    "group": "C"
+    "track_group": "C",
+    "comp_group": "TL"
   },
   {
     "brand": "Renault Megane RS",
-    "group": "C"
+    "track_group": "C",
+    "comp_group": "TL"
   },
   {
     "brand": "Lada Granta Sport",
-    "group": "C"
+    "track_group": "C",
+    "comp_group": "S1600"
   },
   {
     "brand": "Kia Rio",
-    "group": "C"
+    "track_group": "C",
+    "comp_group": "S1600"
   },
   {
     "brand": "WV Polo",
-    "group": "C"
+    "track_group": "C",
+    "comp_group": "S1600"
   },
   {
     "brand": "Civic",
-    "group": "C"
+    "track_group": "C",
+    "comp_group": "TL"
   },
   {
     "brand": "SK Fabia",
-    "group": "C"
+    "track_group": "C",
+    "comp_group": "S1600"
   },
   {
     "brand": "Lada Kalina",
-    "group": "C"
+    "track_group": "C",
+    "comp_group": "Юниор"
   },
   {
     "brand": "Solaris",
-    "group": "C"
+    "track_group": "C",
+    "comp_group": "S1600"
   },
   {
     "brand": "Audi A1",
-    "group": "C"
+    "track_group": "C",
+    "comp_group": "TL"
   },
   {
     "brand": "Subaru BRZ",
-    "group": "C"
+    "track_group": "C",
+    "comp_group": "SP"
   },
   {
     "brand": "Lada Vesta",
-    "group": "C"
+    "track_group": "C",
+    "comp_group": "S1600"
   },
   {
     "brand": "Mini C",
-    "group": "C"
+    "track_group": "C",
+    "comp_group": "TL"
   },
   {
     "brand": "Renault Clio",
-    "group": "C"
+    "track_group": "C",
+    "comp_group": "TL"
   },
   {
     "brand": "Hyundai i30N",
-    "group": "C"
+    "track_group": "C",
+    "comp_group": "TL"
   },
   {
     "brand": "Toyota 86",
-    "group": "C"
+    "track_group": "C",
+    "comp_group": "SP"
   },
   {
     "brand": "Suzuki Swift Sport",
-    "group": "C"
+    "track_group": "C",
+    "comp_group": "S1600"
   },
   {
     "brand": "Peugeot 208 GTi",
-    "group": "C"
+    "track_group": "C",
+    "comp_group": "TL"
   },
   {
     "brand": "Ford Fiesta ST",
-    "group": "C"
+    "track_group": "C",
+    "comp_group": "S1600"
   },
   {
     "brand": "Short Cut",
-    "group": "B"
+    "track_group": "B",
+    "comp_group": "Группа F"
   },
   {
     "brand": "LMP 3",
-    "group": "A"
+    "track_group": "A",
+    "comp_group": "Группа F"
   },
   {
     "brand": "Midget / Миджет",
-    "group": "A"
+    "track_group": "A",
+    "comp_group": "Группа F"
+  },
+  {
+    "brand": "CrossCar / Багги",
+    "track_group": "B",
+    "comp_group": "CrossCar"
+  },
+  {
+    "brand": "BMW E36 / E92 Drift",
+    "track_group": "B",
+    "comp_group": "Drift"
   }
 ];
 
-        // Transliteration map for smart fuzzy search (Cyrillic <-> Latin)
+        const EVENT_GROUPS = {
+            "Трек день": ["A", "B", "C", "Все", "Мастер-класс", "Рэйс-Такси"],
+            "Соревнования": ["S1600", "TL", "SP", "TCR", "GT4", "Юниор", "Д2Н", "Нац.", "CrossCar", "CC125", "CC85", "CC250", "Drift", "Группа F"]
+        };
+
         const TRANSLIT_MAP = {
             'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'yo', 'ж': 'zh',
             'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o',
             'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 'ф': 'f', 'х': 'h', 'ц': 'ts',
             'ч': 'ch', 'ш': 'sh', 'щ': 'sch', 'ы': 'y', 'э': 'e', 'ю': 'yu', 'я': 'ya',
-            // Brand phonetic aliases
             'порш': 'porsche', 'порше': 'porsche', 'бмв': 'bmw', 'ауди': 'audi', 'тойота': 'toyota',
             'мерседес': 'mercedes', 'мерс': 'mercedes', 'хонда': 'honda', 'шкода': 'skoda',
             'субару': 'subaru', 'ниссан': 'nissan', 'киа': 'kia', 'лада': 'lada', 'калина': 'kalina',
@@ -680,35 +870,99 @@
         };
 
         let dailyLog = [];
+        let selectedFormGroups = [];
         let gasScriptUrl = localStorage.getItem('gas_script_url') || '';
 
-        // Initialize Application
         document.addEventListener('DOMContentLoaded', () => {
-            // Set today's date in local ISO format
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('eventDate').value = today;
 
+            onEventTypeChanged();
+
             if (gasScriptUrl) {
                 document.getElementById('gasUrlInput').value = gasScriptUrl;
-                updateSyncStatus('online', 'Гугл-Таблица');
-                fetchLogsFromGoogleSheet();
+                testConnection();
             } else {
+                updateSyncStatus('offline', 'Настроить URL');
                 loadLocalLog();
             }
 
             setupAutocomplete();
         });
 
+        function onEventTypeChanged() {
+            const eventType = document.getElementById('eventType').value;
+            const groups = EVENT_GROUPS[eventType] || EVENT_GROUPS["Трек день"];
+
+            // 1. Populate form group chips
+            const chipsContainer = document.getElementById('groupChipsContainer');
+            chipsContainer.innerHTML = '';
+            selectedFormGroups = [];
+
+            groups.forEach(grp => {
+                const chip = document.createElement('div');
+                chip.className = 'group-chip';
+                chip.textContent = grp;
+                chip.onclick = () => toggleGroupChip(grp, chip);
+                chipsContainer.appendChild(chip);
+            });
+
+            // 2. Populate table group filter dropdown
+            const filterSelect = document.getElementById('tableGroupFilter');
+            filterSelect.innerHTML = '<option value="ALL" selected>Все группы (без фильтра)</option>';
+            groups.forEach(grp => {
+                const opt = document.createElement('option');
+                opt.value = grp;
+                opt.textContent = `Группа: ${grp}`;
+                filterSelect.appendChild(opt);
+            });
+
+            renderLogTable();
+        }
+
+        function toggleGroupChip(grp, chipEl) {
+            const idx = selectedFormGroups.indexOf(grp);
+            if (idx > -1) {
+                selectedFormGroups.splice(idx, 1);
+                chipEl.classList.remove('active');
+            } else {
+                selectedFormGroups.push(grp);
+                chipEl.classList.add('active');
+            }
+            document.getElementById('groupDisplay').textContent = selectedFormGroups.length > 0 ? selectedFormGroups.join(', ') : '—';
+        }
+
+        function setSelectedGroups(groupsArray) {
+            selectedFormGroups = [...groupsArray];
+            const chipEls = document.querySelectorAll('#groupChipsContainer .group-chip');
+            chipEls.forEach(chip => {
+                if (selectedFormGroups.includes(chip.textContent.trim())) {
+                    chip.classList.add('active');
+                } else {
+                    chip.classList.remove('active');
+                }
+            });
+            document.getElementById('groupDisplay').textContent = selectedFormGroups.length > 0 ? selectedFormGroups.join(', ') : '—';
+        }
+
+        function onDateChanged() {
+            if (gasScriptUrl) {
+                fetchLogsFromGoogleSheet();
+            } else {
+                loadLocalLog();
+            }
+        }
+
         function toggleSettings() {
-            document.getElementById('settingsDrawer').classList.toggle('open');
+            const drawer = document.getElementById('settingsDrawer');
+            if (drawer) drawer.classList.toggle('open');
         }
 
         function saveGasUrl() {
             gasScriptUrl = document.getElementById('gasUrlInput').value.trim();
             localStorage.setItem('gas_script_url', gasScriptUrl);
             if (gasScriptUrl) {
-                updateSyncStatus('online', 'Гугл-Таблица');
-                fetchLogsFromGoogleSheet();
+                testConnection();
             } else {
                 updateSyncStatus('offline', 'Автономно');
             }
@@ -721,31 +975,62 @@
             if (status === 'online') {
                 badge.style.background = '#14532d';
                 badge.style.borderColor = '#22c55e';
+                badge.style.color = '#4ade80';
                 icon.style.color = '#4ade80';
                 txt.textContent = text || 'Онлайн';
             } else if (status === 'syncing') {
                 badge.style.background = '#7c2d12';
                 badge.style.borderColor = '#f97316';
+                badge.style.color = '#fdba74';
                 icon.style.color = '#fdba74';
-                txt.textContent = 'Синхронизация...';
+                txt.textContent = 'Связь...';
             } else {
                 badge.style.background = '#334155';
                 badge.style.borderColor = '#64748b';
+                badge.style.color = '#94a3b8';
                 icon.style.color = '#94a3b8';
-                txt.textContent = 'Автономно';
+                txt.textContent = text || 'Автономно';
             }
         }
 
-        // Phonetic normalize function
+        function testConnection() {
+            if (!gasScriptUrl) {
+                alert('Пожалуйста, введите URL Google Apps Script в настройках!');
+                toggleSettings();
+                return;
+            }
+
+            updateSyncStatus('syncing', 'Проверка...');
+            const date = document.getElementById('eventDate').value;
+
+            fetch(`${gasScriptUrl}?date=${date}&ping=1`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.status === 'success') {
+                        updateSyncStatus('online', 'Онлайн (Таблица)');
+                        if (data.entries) {
+                            dailyLog = data.entries;
+                            renderLogTable();
+                        }
+                    } else {
+                        updateSyncStatus('offline', 'Ошибка ответа');
+                    }
+                })
+                .catch(err => {
+                    console.error('GAS connection error:', err);
+                    updateSyncStatus('offline', 'Ошибка связи');
+                    alert('Не удалось подключиться к Google Apps Script!\nПроверьте:\n1. URL заканчивается на /exec\n2. Права доступа установлены "Все" (Anyone)');
+                    loadLocalLog();
+                });
+        }
+
         function normalizeString(str) {
             let s = str.toLowerCase().trim();
-            // Replace full word aliases
             for (let k in TRANSLIT_MAP) {
                 if (k.length > 2 && s.includes(k)) {
                     s = s.replace(new RegExp(k, 'g'), TRANSLIT_MAP[k]);
                 }
             }
-            // Char by char transliteration
             let res = '';
             for (let char of s) {
                 res += TRANSLIT_MAP[char] || char;
@@ -753,10 +1038,11 @@
             return res.replace(/[^a-z0-9]/g, '');
         }
 
-        // Autocomplete setup
         function setupAutocomplete() {
             const input = document.getElementById('carInput');
             const suggestionsEl = document.getElementById('suggestions');
+
+            if (!input || !suggestionsEl) return;
 
             input.addEventListener('input', () => {
                 const val = input.value;
@@ -767,6 +1053,7 @@
 
                 const queryNorm = normalizeString(val);
                 const rawLower = val.toLowerCase();
+                const currentEventType = document.getElementById('eventType').value;
 
                 const filtered = CAR_CATALOG.filter(item => {
                     const brandNorm = normalizeString(item.brand);
@@ -775,21 +1062,24 @@
                 });
 
                 if (filtered.length === 0) {
-                    // Fallback to unknown brand search
-                    suggestionsEl.innerHTML = `<div class="suggestion-item" onclick="selectCar('${val.replace(/'/g, "\'")}', 'C')">
+                    const defaultGrp = currentEventType === "Соревнования" ? "S1600" : "C";
+                    suggestionsEl.innerHTML = `<div class="suggestion-item" onclick="selectCar('${val.replace(/'/g, "\'")}', '${defaultGrp}')">
                         <div>➕ Добавить "${val}"</div>
-                        <span class="group-tag group-C">По умалч. C</span>
+                        <span class="group-tag">${defaultGrp}</span>
                     </div>`;
                     suggestionsEl.style.display = 'block';
                     return;
                 }
 
-                suggestionsEl.innerHTML = filtered.map(item => `
-                    <div class="suggestion-item" onclick="selectCar('${item.brand.replace(/'/g, "\'")}', '${item.group}')">
-                        <div><strong>${item.brand}</strong></div>
-                        <span class="group-tag group-${item.group}">Группа ${item.group}</span>
-                    </div>
-                `).join('');
+                suggestionsEl.innerHTML = filtered.map(item => {
+                    let recommendedGroup = currentEventType === "Соревнования" ? item.comp_group : item.track_group;
+                    return `
+                        <div class="suggestion-item" onclick="selectCar('${item.brand.replace(/'/g, "\'")}', '${recommendedGroup}')">
+                            <div><strong>${item.brand}</strong></div>
+                            <span class="group-tag">${recommendedGroup}</span>
+                        </div>
+                    `;
+                }).join('');
 
                 suggestionsEl.style.display = 'block';
             });
@@ -805,13 +1095,13 @@
             document.getElementById('carInput').value = brand;
             document.getElementById('suggestions').style.display = 'none';
             
-            // Set Group display
-            const groupDisplay = document.getElementById('groupDisplay');
-            groupDisplay.textContent = group;
-            groupDisplay.className = `group-banner-val group-tag group-${group}`;
+            // Set single or multiple groups from recommendation
+            if (group) {
+                const grpList = group.split(',').map(s => s.trim());
+                setSelectedGroups(grpList);
+            }
 
-            document.getElementById('assignedGroupSelect').value = group;
-            document.getElementById('groupSourceNote').textContent = 'Найдено в Справочнике Авто';
+            document.getElementById('groupSourceNote').textContent = 'Определено автоматически';
         }
 
         function addCarToLog() {
@@ -820,7 +1110,7 @@
             const number = document.getElementById('numberInput').value.trim();
             const color = document.getElementById('colorInput').value.trim();
             const box = document.getElementById('boxInput').value.trim();
-            const group = document.getElementById('assignedGroupSelect').value;
+            const groupStr = selectedFormGroups.join(', ');
             const notes = document.getElementById('notesInput').value.trim();
             const date = document.getElementById('eventDate').value;
             const eventType = document.getElementById('eventType').value;
@@ -835,20 +1125,19 @@
                 date: date,
                 eventType: eventType,
                 car: car,
-                driver: driver || '—',
-                number: number || 'б/н',
-                color: color || '—',
-                box: box || '—',
-                group: group,
-                notes: notes || 'Прошел ТИ',
+                driver: driver,
+                number: number,
+                color: color,
+                box: box,
+                group: groupStr,
+                notes: notes,
                 timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
             };
 
-            dailyLog.unshift(newItem);
+            dailyLog.push(newItem);
             renderLogTable();
             clearInputs();
 
-            // Sync to Google Sheet if configured
             if (gasScriptUrl) {
                 syncCarToGoogleSheet(newItem);
             } else {
@@ -863,87 +1152,185 @@
             document.getElementById('colorInput').value = '';
             document.getElementById('boxInput').value = '';
             document.getElementById('notesInput').value = '';
-            document.getElementById('groupDisplay').textContent = '—';
-            document.getElementById('groupDisplay').className = 'group-banner-val';
+            setSelectedGroups([]);
         }
 
         function renderLogTable() {
             const tbody = document.getElementById('logTableBody');
             const totalCarsCount = document.getElementById('totalCarsCount');
 
-            totalCarsCount.textContent = dailyLog.length;
+            // Apply Group Filtering
+            const filterGroup = document.getElementById('tableGroupFilter').value;
+            let displayList = dailyLog;
+
+            if (filterGroup !== "ALL") {
+                displayList = dailyLog.filter(item => {
+                    if (!item.group) return false;
+                    const gLower = item.group.toLowerCase();
+                    const fLower = filterGroup.toLowerCase();
+                    return gLower.includes(fLower);
+                });
+            }
+
+            totalCarsCount.textContent = displayList.length;
             document.getElementById('statTotal').textContent = dailyLog.length;
 
-            let countA = 0, countB = 0, countC = 0;
-            dailyLog.forEach(item => {
-                if (item.group === 'A' || item.group === 'GT4' || item.group === 'TCR') countA++;
-                else if (item.group === 'B') countB++;
-                else if (item.group === 'C') countC++;
-            });
+            const eventType = document.getElementById('eventType').value;
+            if (eventType === "Соревнования") {
+                document.getElementById('statChip1').style.display = 'block';
+                document.getElementById('statChip1').childNodes[0].nodeValue = "S1600: ";
+                document.getElementById('statChip2').style.display = 'block';
+                document.getElementById('statChip2').childNodes[0].nodeValue = "TL: ";
+                document.getElementById('statChip3').style.display = 'block';
+                document.getElementById('statChip3').childNodes[0].nodeValue = "SP: ";
 
-            document.getElementById('statA').textContent = countA;
-            document.getElementById('statB').textContent = countB;
-            document.getElementById('statC').textContent = countC;
+                let s1600 = 0, tl = 0, sp = 0;
+                dailyLog.forEach(i => {
+                    if (i.group && i.group.includes("S1600")) s1600++;
+                    else if (i.group && i.group.includes("TL")) tl++;
+                    else if (i.group && i.group.includes("SP")) sp++;
+                });
+                document.getElementById('statVal1').textContent = s1600;
+                document.getElementById('statVal2').textContent = tl;
+                document.getElementById('statVal3').textContent = sp;
+            } else {
+                document.getElementById('statChip1').style.display = 'block';
+                document.getElementById('statChip1').childNodes[0].nodeValue = "Группа A: ";
+                document.getElementById('statChip2').style.display = 'block';
+                document.getElementById('statChip2').childNodes[0].nodeValue = "Группа B: ";
+                document.getElementById('statChip3').style.display = 'block';
+                document.getElementById('statChip3').childNodes[0].nodeValue = "Группа C: ";
 
-            if (dailyLog.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-sub); padding: 20px;">Список на выбранную дату пока пуст</td></tr>`;
+                let a = 0, b = 0, c = 0;
+                dailyLog.forEach(i => {
+                    if (!i.group) return;
+                    if (i.group.includes("A") || i.group.includes("А")) a++;
+                    if (i.group.includes("B") || i.group.includes("В")) b++;
+                    if (i.group.includes("C") || i.group.includes("С")) c++;
+                });
+                document.getElementById('statVal1').textContent = a;
+                document.getElementById('statVal2').textContent = b;
+                document.getElementById('statVal3').textContent = c;
+            }
+
+            if (displayList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-sub); padding: 20px;">
+                    ${filterGroup !== "ALL" ? `Нет записей для группы "${filterGroup}"` : 'Список на выбранную дату пока пуст'}
+                </td></tr>`;
                 return;
             }
 
-            tbody.innerHTML = dailyLog.map((item, idx) => `
-                <tr>
-                    <td><strong>${dailyLog.length - idx}</strong></td>
-                    <td><strong>${item.car}</strong><br><small style="color: var(--text-sub)">${item.color}</small></td>
-                    <td>${item.driver}</td>
-                    <td><span style="background: #334155; padding: 2px 6px; border-radius: 4px; font-weight: bold;">№${item.number}</span></td>
-                    <td><span class="group-tag group-${item.group}">${item.group}</span></td>
-                    <td><button style="background: none; border: none; color: #ef4444; font-size: 16px; cursor: pointer;" onclick="deleteCar(${item.id})">🗑️</button></td>
-                </tr>
-            `).join('');
+            tbody.innerHTML = displayList.map((item, idx) => {
+                const originalIndex = dailyLog.indexOf(item);
+                return `
+                    <tr>
+                        <td><strong>${item.rowNum || (originalIndex + 1)}</strong></td>
+                        <td><strong>${item.car}</strong>${item.color ? `<br><small style="color: var(--text-sub)">${item.color}</small>` : ''}</td>
+                        <td>${item.driver || '—'}</td>
+                        <td><span style="background: #334155; padding: 2px 6px; border-radius: 4px; font-weight: bold;">${item.number ? '№' + item.number : 'б/н'}</span></td>
+                        <td><span class="group-tag">${item.group || '—'}</span></td>
+                        <td class="action-col"><button style="background: none; border: none; color: #ef4444; font-size: 16px; cursor: pointer;" onclick="deleteCar(${originalIndex})">🗑️</button></td>
+                    </tr>
+                `;
+            }).join('');
         }
 
-        function deleteCar(id) {
-            if (confirm('Удалить запись из списка?')) {
-                dailyLog = dailyLog.filter(x => x.id !== id);
+        function deleteCar(index) {
+            if (index < 0 || index >= dailyLog.length) return;
+            const item = dailyLog[index];
+            if (confirm(`Удалить ${item.car} (${item.driver}) из списка и Google Таблицы?`)) {
+                dailyLog.splice(index, 1);
                 renderLogTable();
                 saveLocalLog();
+
+                if (gasScriptUrl) {
+                    deleteCarFromGoogleSheet(item, index);
+                }
             }
         }
 
+        function deleteCarFromGoogleSheet(item, index) {
+            updateSyncStatus('syncing', 'Удаление...');
+            fetch(gasScriptUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({
+                    action: 'delete_entry',
+                    date: item.date,
+                    rowIndex: item.sheetRowIndex,
+                    car: item.car,
+                    driver: item.driver,
+                    number: item.number
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.status === 'success') {
+                    updateSyncStatus('online', 'Удалено из таблицы');
+                    fetchLogsFromGoogleSheet();
+                } else {
+                    updateSyncStatus('offline', 'Ошибка удаления');
+                }
+            })
+            .catch(err => {
+                console.error('Delete error:', err);
+                updateSyncStatus('offline', ' Ошибка сети');
+            });
+        }
+
         function saveLocalLog() {
-            localStorage.setItem('daily_ti_log', JSON.stringify(dailyLog));
+            const date = document.getElementById('eventDate').value;
+            localStorage.setItem(`daily_ti_log_${date}`, JSON.stringify(dailyLog));
         }
 
         function loadLocalLog() {
-            const stored = localStorage.getItem('daily_ti_log');
+            const date = document.getElementById('eventDate').value;
+            const stored = localStorage.setItem(`daily_ti_log_${date}`);
             if (stored) {
                 try {
                     dailyLog = JSON.parse(stored);
                     renderLogTable();
-                } catch (e) {}
+                } catch (e) { dailyLog = []; }
+            } else {
+                dailyLog = [];
+                renderLogTable();
             }
         }
 
-        // Web Share API to share with Race Control (Рейс Контроль)
         function shareParticipantList() {
             const eventType = document.getElementById('eventType').value;
             const eventDate = document.getElementById('eventDate').value;
 
-            if (dailyLog.length === 0) {
+            const filterGroup = document.getElementById('tableGroupFilter').value;
+            let exportList = dailyLog;
+            if (filterGroup !== "ALL") {
+                exportList = dailyLog.filter(item => item.group && item.group.toLowerCase().includes(filterGroup.toLowerCase()));
+            }
+
+            if (exportList.length === 0) {
                 alert('Список участников пуст!');
                 return;
             }
 
-            let text = `🏁 *СПИСОК УЧАСТНИКОВ ТИ* 🏁\n`;
-            text += `Мероприятие: ${eventType}\n`;
-            text += `Дата: ${eventDate}\n`;
-            text += `Всего авто: ${dailyLog.length}\n\n`;
+            let text = `🏁 *СПИСОК УЧАСТНИКОВ ТИ* 🏁
+`;
+            text += `Мероприятие: ${eventType}
+`;
+            text += `Дата: ${eventDate}
+`;
+            if (filterGroup !== "ALL") text += `Фильтр по группе: ${filterGroup}
+`;
+            text += `Всего авто: ${exportList.length}
 
-            dailyLog.slice().reverse().forEach((item, index) => {
-                text += `${index + 1}. №${item.number} | ${item.car} | ${item.driver} | Гр. ${item.group}\n`;
+`;
+
+            exportList.forEach((item, index) => {
+                text += `${index + 1}. №${item.number || 'б/н'} | ${item.car} | ${item.driver || '—'} | ${item.group || '—'}
+`;
             });
 
-            text += `\n⚡ Сформировано в приложении Техконтроль ТИ`;
+            text += `
+⚡ Сформировано в приложении Техконтроль ТИ`;
 
             if (navigator.share) {
                 navigator.share({
@@ -957,6 +1344,19 @@
             }
         }
 
+        function exportToPDF() {
+            const eventType = document.getElementById('eventType').value;
+            const eventDate = document.getElementById('eventDate').value;
+            const filterGroup = document.getElementById('tableGroupFilter').value;
+
+            const parts = eventDate.split('-');
+            const formattedDate = parts.length === 3 ? `${parts[2]}.${parts[1]}.${parts[0]}` : eventDate;
+
+            let filterText = filterGroup !== "ALL" ? ` | Группа: ${filterGroup}` : '';
+            document.getElementById('printHeaderMeta').textContent = `Мероприятие: ${eventType} | Дата: ${formattedDate}${filterText} | Выведено авто: ${document.getElementById('totalCarsCount').textContent}`;
+            window.print();
+        }
+
         function copyToClipboard(text) {
             navigator.clipboard.writeText(text).then(() => {
                 alert('Список скопирован в буфер обмена! Можете вставить его в чат Рейс Контроля.');
@@ -965,18 +1365,24 @@
             });
         }
 
-        // Google Sheets API Syncing functions
         function syncCarToGoogleSheet(item) {
             updateSyncStatus('syncing', 'Сохранение...');
             fetch(gasScriptUrl, {
                 method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify({ action: 'add_entry', data: item })
-            }).then(() => {
-                updateSyncStatus('online', 'Синхронизировано');
-                saveLocalLog();
-            }).catch(err => {
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.status === 'success') {
+                    updateSyncStatus('online', 'Синхронизировано');
+                    fetchLogsFromGoogleSheet();
+                } else {
+                    updateSyncStatus('offline', 'Ошибка таблицы');
+                }
+            })
+            .catch(err => {
+                console.error('GAS POST sync error:', err);
                 updateSyncStatus('offline', 'Ошибка сети');
                 saveLocalLog();
             });
@@ -992,11 +1398,13 @@
                     if (data && data.status === 'success' && data.entries) {
                         dailyLog = data.entries;
                         renderLogTable();
-                        updateSyncStatus('online', 'Гугл-Таблица');
+                        updateSyncStatus('online', 'Онлайн (Таблица)');
+                        saveLocalLog();
                     }
                 })
                 .catch(err => {
-                    updateSyncStatus('offline', 'Ошибка сети');
+                    console.error('GAS GET fetch error:', err);
+                    updateSyncStatus('offline', 'Ошибка связи');
                     loadLocalLog();
                 });
         }
