@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Технический Контроль — Трек Дни</title>
+    <meta name="theme-color" content="#1e293b">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent: #38bdf8;
+            --accent-green: #22c55e;
+            --accent-orange: #f97316;
+            --accent-purple: #a855f7;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --border-color: #334155;
+            --input-bg: #0f172a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding: 12px;
+            padding-bottom: 80px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--card-bg);
+            padding: 14px 16px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            background: linear-gradient(135deg, #0284c7, #2563eb);
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        h1 {
+            font-size: 17px;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 11px;
+            color: var(--text-sub);
+        }
+
+        .sync-badge {
+            font-size: 11px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            background: #334155;
+            color: #94a3b8;
+            border: 1px solid #475569;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 16px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 14px;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+
+        .form-group.full {
+            grid-column: span 2;
+        }
+
+        label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-sub);
+        }
+
+        input, select {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 15px;
+            outline: none;
+            width: 100%;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent);
+        }
+
+        .autocomplete-wrapper {
+            position: relative;
+        }
+
+        .suggestions-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #1e293b;
+            border: 1px solid var(--accent);
+            border-radius: 10px;
+            max-height: 220px;
+            overflow-y: auto;
+            z-index: 100;
+            margin-top: 4px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            display: none;
+        }
+
+        .suggestion-item {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
+        .group-tag {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 6px;
+            text-transform: uppercase;
+            background: #334155;
+            color: #38bdf8;
+            border: 1px solid #0284c7;
+        }
+
+        .group-banner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #0284c715;
+            border: 2px dashed #0284c7;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-top: 4px;
+            margin-bottom: 12px;
+        }
+
+        .group-banner-text {
+            font-size: 13px;
+            color: var(--text-sub);
+        }
+
+        .group-banner-val {
+            font-size: 20px;
+            font-weight: 800;
+            color: #38bdf8;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            border: none;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: transform 0.1s, opacity 0.2s;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn-share {
+            background: linear-gradient(135deg, #16a34a, #15803d);
+            color: white;
+            box-shadow: 0 4px 14px rgba(22, 163, 74, 0.4);
+        }
+
+        .btn-pdf {
+            background: linear-gradient(135deg, #0284c7, #0369a1);
+            color: white;
+            box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4);
+        }
+
+        .btn-secondary {
+            background: #334155;
+            color: white;
+            padding: 8px 12px;
+            font-size: 12px;
+            width: auto;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .log-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 8px;
+            font-size: 13px;
+        }
+
+        .log-table th {
+            text-align: left;
+            padding: 8px;
+            color: var(--text-sub);
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 600;
+        }
+
+        .log-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: middle;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+
+        .stat-chip {
+            background: #0f172a;
+            border: 1px solid var(--border-color);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .stat-chip span {
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        .settings-drawer {
+            display: none;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            padding: 14px;
+            border-radius: 12px;
+            margin-bottom: 14px;
+        }
+
+        .settings-drawer.open {
+            display: block;
+        }
+
+        .badge-count {
+            background: var(--accent);
+            color: #0f172a;
+            border-radius: 50%;
+            width: 22px;
+            height: 22px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .action-buttons-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        /* PRINT / PDF STYLES */
+        @media print {
+            body {
+                background-color: #ffffff !important;
+                color: #000000 !important;
+                padding: 0 !important;
+                max-width: 100% !important;
+            }
+
+            header, .settings-drawer, .btn, .btn-secondary, .autocomplete-wrapper, .group-banner, .form-grid, .action-buttons-row, .card-title button, #syncStatus {
+                display: none !important;
+            }
+
+            .card {
+                background: #ffffff !important;
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+
+            .print-header {
+                display: block !important;
+                text-align: center;
+                margin-bottom: 20px;
+                border-bottom: 2px solid #000;
+                padding-bottom: 10px;
+            }
+
+            .print-header h2 {
+                font-size: 18pt;
+                margin-bottom: 4px;
+            }
+
+            .print-header p {
+                font-size: 11pt;
+                color: #333;
+            }
+
+            .log-table {
+                width: 100% !important;
+                border: 1px solid #000 !important;
+                font-size: 10pt !important;
+            }
+
+            .log-table th, .log-table td {
+                border: 1px solid #000 !important;
+                color: #000 !important;
+                padding: 6px !important;
+            }
+
+            .group-tag {
+                background: none !important;
+                border: 1px solid #000 !important;
+                color: #000 !important;
+            }
+
+            .action-col {
+                display: none !important;
+            }
+        }
+
+        .print-header {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Printable Header -->
+    <div class="print-header">
+        <h2>ПРОТОКОЛ ТЕХНИЧЕСКОЙ ИНСПЕКЦИИ (ТИ)</h2>
+        <p id="printHeaderMeta">Мероприятие: Трек День | Дата: --.--.----</p>
+    </div>
+
+    <header>
+        <div class="logo-area">
+            <div class="logo-icon">🏎️</div>
+            <div>
+                <h1>Техконтроль ТИ</h1>
+                <div class="subtitle">Приложение инспектора</div>
+            </div>
+        </div>
+        <div id="syncStatus" class="sync-badge" onclick="testConnection()">
+            <span id="syncIcon">●</span> <span id="syncText">Проверить связь</span>
+        </div>
+    </header>
+
+    <!-- Event Selection & Date Header -->
+    <div class="card">
+        <div class="card-title">
+            <span> Мероприятие и дата</span>
+            <button class="btn-secondary" onclick="toggleSettings()">⚙️ Настройки Таблицы</button>
+        </div>
+        
+        <div id="settingsDrawer" class="settings-drawer">
+            <div class="form-group">
+                <label>URL Google Apps Script (для онлайн-синхронизации):</label>
+                <input type="text" id="gasUrlInput" placeholder="https://script.google.com/macros/s/.../exec" onchange="saveGasUrl()">
+                <div style="font-size: 11px; color: var(--text-sub); margin-top: 6px; line-height: 1.4;">
+                    <strong>Инструкция по развертыванию:</strong><br>
+                    1. В Google Таблице перейдите в <em>Расширения ➔ Apps Script</em> и вставьте код.<br>
+                    2. Нажмите <em>Развернуть ➔ Управление развертываниями ➔ Версия: "Новая версия"</em>.<br>
+                    3. Права доступа: <strong>"Все" (Anyone)</strong>.<br>
+                    4. Скопируйте URL и вставьте сюда.
+                </div>
+            </div>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Режим работы (Мероприятие):</label>
+                <select id="eventType" onchange="onEventTypeChanged()">
+                    <option value="Трек день" selected>Трек день</option>
+                    <option value="Соревнования">Соревнования</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Дата проведения:</label>
+                <input type="date" id="eventDate" onchange="onDateChanged()">
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Car Search and Registration Form -->
+    <div class="card">
+        <div class="card-title">📋 Прохождение ТИ (Входной контроль)</div>
+
+        <div class="form-group full autocomplete-wrapper">
+            <label>Поиск / Выбор автомобиля (марка, модель или транслит):</label>
+            <input type="text" id="carInput" placeholder="Например: Porsh, БМВ, Калина, Supra, GT4..." autocomplete="off">
+            <div id="suggestions" class="suggestions-list"></div>
+        </div>
+
+        <div class="group-banner">
+            <div>
+                <div class="group-banner-text">Рекомендуемая Группа:</div>
+                <div style="font-size: 11px; color: var(--text-sub);" id="groupSourceNote">Из Справочника Авто</div>
+            </div>
+            <div id="groupDisplay" class="group-banner-val">—</div>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Пилот (Фамилия Имя):</label>
+                <input type="text" id="driverInput" placeholder="Иванов И.">
+            </div>
+            <div class="form-group">
+                <label>Стартовый № (СТ№):</label>
+                <input type="text" id="numberInput" placeholder="13">
+            </div>
+            <div class="form-group">
+                <label>Цвет авто:</label>
+                <input type="text" id="colorInput" placeholder="Черный">
+            </div>
+            <div class="form-group">
+                <label>№ Бокса (если есть):</label>
+                <input type="text" id="boxInput" placeholder="15 бокс">
+            </div>
+            <div class="form-group full">
+                <label>Выбранная Группа / Замечания ТИ:</label>
+                <div style="display: flex; gap: 8px;">
+                    <select id="assignedGroupSelect" style="flex: 1.2;">
+                        <!-- Dynamically filled depending on eventType -->
+                    </select>
+                    <input type="text" id="notesInput" placeholder="Замечания (напр. СПТ, шлем)" style="flex: 2;">
+                </div>
+            </div>
+        </div>
+
+        <button class="btn btn-primary" onclick="addCarToLog()" style="margin-top: 10px;">
+            ✅ Выдать ТИ и добавить в список
+        </button>
+    </div>
+
+    <!-- Daily Log Section -->
+    <div class="card">
+        <div class="card-title">
+            <span>📊 Список участников на день</span>
+            <span class="badge-count" id="totalCarsCount">0</span>
+        </div>
+
+        <div class="action-buttons-row">
+            <button class="btn btn-share" onclick="shareParticipantList()">
+                📲 Поделиться
+            </button>
+            <button class="btn btn-pdf" onclick="exportToPDF()">
+                📄 PDF / Печать
+            </button>
+        </div>
+
+        <div class="stats-bar" id="statsBar">
+            <div class="stat-chip">Всего: <span id="statTotal">0</span></div>
+            <div class="stat-chip" id="statChip1">Группа A: <span id="statVal1">0</span></div>
+            <div class="stat-chip" id="statChip2">Группа B: <span id="statVal2">0</span></div>
+            <div class="stat-chip" id="statChip3">Группа C: <span id="statVal3">0</span></div>
+        </div>
+
+        <div style="overflow-x: auto;">
+            <table class="log-table">
+                <thead>
+                    <tr>
+                        <th>№</th>
+                        <th>Марка авто</th>
+                        <th>Пилот</th>
+                        <th>СТ№</th>
+                        <th>Группа</th>
+                        <th class="action-col">Действие</th>
+                    </tr>
+                </thead>
+                <tbody id="logTableBody">
+                    <tr>
+                        <td colspan="6" style="text-align: center; color: var(--text-sub); padding: 20px;">
+                            Список на выбранную дату пока пуст
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const CAR_CATALOG = [
+  {
+    "brand": "GT4 AMG",
+    "track_group": "A",
+    "comp_group": "GT4"
+  },
+  {
+    "brand": "GT4 BMW M4",
+    "track_group": "A",
+    "comp_group": "GT4"
+  },
+  {
+    "brand": "GT4 Supra",
+    "track_group": "A",
+    "comp_group": "GT4"
+  },
+  {
+    "brand": "GT 4 Audi R8",
+    "track_group": "A",
+    "comp_group": "GT4"
+  },
+  {
+    "brand": "GT4 Porsche",
+    "track_group": "A",
+    "comp_group": "GT4"
+  },
+  {
+    "brand": "GT4 KTM X-Bow",
+    "track_group": "A",
+    "comp_group": "GT4"
+  },
+  {
+    "brand": "Porsche 911 carrera s",
+    "track_group": "A",
+    "comp_group": "GT4"
+  },
+  {
+    "brand": "Porsche cayman GTS",
+    "track_group": "A",
+    "comp_group": "GT4"
+  },
+  {
+    "brand": "BMW M4",
+    "track_group": "A",
+    "comp_group": "GT4"
+  },
+  {
+    "brand": "TCR Cupra",
+    "track_group": "A",
+    "comp_group": "TCR"
+  },
+  {
+    "brand": "TCR Elantra",
+    "track_group": "A",
+    "comp_group": "TCR"
+  },
+  {
+    "brand": "TCR Lada",
+    "track_group": "A",
+    "comp_group": "TCR"
+  },
+  {
+    "brand": "TCR Audi RS3 LMC",
+    "track_group": "A",
+    "comp_group": "TCR"
+  },
+  {
+    "brand": "TCR i30N",
+    "track_group": "A",
+    "comp_group": "TCR"
+  },
+  {
+    "brand": "BMW M2",
+    "track_group": "B",
+    "comp_group": "SP"
+  },
+  {
+    "brand": "Subaru Impreza WRX STI",
+    "track_group": "B",
+    "comp_group": "SP"
+  },
+  {
+    "brand": "Mitsubishi Lancer Evolution",
+    "track_group": "B",
+    "comp_group": "SP"
+  },
+  {
+    "brand": "Toyota GR Yaris",
+    "track_group": "B",
+    "comp_group": "SP"
+  },
+  {
+    "brand": "Ford Focus RS",
+    "track_group": "B",
+    "comp_group": "SP"
+  },
+  {
+    "brand": "VW Golf R",
+    "track_group": "B",
+    "comp_group": "SP"
+  },
+  {
+    "brand": "Honda S2000",
+    "track_group": "B",
+    "comp_group": "SP"
+  },
+  {
+    "brand": "Mazda MX-5",
+    "track_group": "C",
+    "comp_group": "TL"
+  },
+  {
+    "brand": "Honda Civic Type R",
+    "track_group": "C",
+    "comp_group": "TL"
+  },
+  {
+    "brand": "Renault Megane RS",
+    "track_group": "C",
+    "comp_group": "TL"
+  },
+  {
+    "brand": "Lada Granta Sport",
+    "track_group": "C",
+    "comp_group": "S1600"
+  },
+  {
+    "brand": "Kia Rio",
+    "track_group": "C",
+    "comp_group": "S1600"
+  },
+  {
+    "brand": "WV Polo",
+    "track_group": "C",
+    "comp_group": "S1600"
+  },
+  {
+    "brand": "Civic",
+    "track_group": "C",
+    "comp_group": "TL"
+  },
+  {
+    "brand": "SK Fabia",
+    "track_group": "C",
+    "comp_group": "S1600"
+  },
+  {
+    "brand": "Lada Kalina",
+    "track_group": "C",
+    "comp_group": "Юниор"
+  },
+  {
+    "brand": "Solaris",
+    "track_group": "C",
+    "comp_group": "S1600"
+  },
+  {
+    "brand": "Audi A1",
+    "track_group": "C",
+    "comp_group": "TL"
+  },
+  {
+    "brand": "Subaru BRZ",
+    "track_group": "C",
+    "comp_group": "SP"
+  },
+  {
+    "brand": "Lada Vesta",
+    "track_group": "C",
+    "comp_group": "S1600"
+  },
+  {
+    "brand": "Mini C",
+    "track_group": "C",
+    "comp_group": "TL"
+  },
+  {
+    "brand": "Renault Clio",
+    "track_group": "C",
+    "comp_group": "TL"
+  },
+  {
+    "brand": "Hyundai i30N",
+    "track_group": "C",
+    "comp_group": "TL"
+  },
+  {
+    "brand": "Toyota 86",
+    "track_group": "C",
+    "comp_group": "SP"
+  },
+  {
+    "brand": "Suzuki Swift Sport",
+    "track_group": "C",
+    "comp_group": "S1600"
+  },
+  {
+    "brand": "Peugeot 208 GTi",
+    "track_group": "C",
+    "comp_group": "TL"
+  },
+  {
+    "brand": "Ford Fiesta ST",
+    "track_group": "C",
+    "comp_group": "S1600"
+  },
+  {
+    "brand": "Short Cut",
+    "track_group": "B",
+    "comp_group": "Группа F"
+  },
+  {
+    "brand": "LMP 3",
+    "track_group": "A",
+    "comp_group": "Группа F"
+  },
+  {
+    "brand": "Midget / Миджет",
+    "track_group": "A",
+    "comp_group": "Группа F"
+  },
+  {
+    "brand": "CrossCar / Багги",
+    "track_group": "B",
+    "comp_group": "CrossCar"
+  },
+  {
+    "brand": "BMW E36 / E92 Drift",
+    "track_group": "B",
+    "comp_group": "Drift"
+  }
+];
+
+        // Updated groups as per request
+        const EVENT_GROUPS = {
+            "Трек день": ["A", "B", "C", "Все", "Мастер-класс", "Рэйс-Такси"],
+            "Соревнования": ["S1600", "TL", "SP", "TCR", "GT4", "Юниор", "Д2Н", "Нац.", "CrossCar", "CC125", "CC85", "CC250", "Drift", "Группа F"]
+        };
+
+        const TRANSLIT_MAP = {
+            'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'yo', 'ж': 'zh',
+            'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o',
+            'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 'ф': 'f', 'х': 'h', 'ц': 'ts',
+            'ч': 'ch', 'ш': 'sh', 'щ': 'sch', 'ы': 'y', 'э': 'e', 'ю': 'yu', 'я': 'ya',
+            'порш': 'porsche', 'порше': 'porsche', 'бмв': 'bmw', 'ауди': 'audi', 'тойота': 'toyota',
+            'мерседес': 'mercedes', 'мерс': 'mercedes', 'хонда': 'honda', 'шкода': 'skoda',
+            'субару': 'subaru', 'ниссан': 'nissan', 'киа': 'kia', 'лада': 'lada', 'калина': 'kalina',
+            'поло': 'polo', 'фольксваген': 'vw', 'шорткат': 'short cut', 'шорт кат': 'short cut',
+            'миджет': 'midget', 'супра': 'supra', 'гранта': 'granta', 'солярис': 'solaris'
+        };
+
+        let dailyLog = [];
+        let gasScriptUrl = localStorage.getItem('gas_script_url') || '';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('eventDate').value = today;
+
+            onEventTypeChanged();
+
+            if (gasScriptUrl) {
+                document.getElementById('gasUrlInput').value = gasScriptUrl;
+                testConnection();
+            } else {
+                updateSyncStatus('offline', 'Настроить URL');
+                loadLocalLog();
+            }
+
+            setupAutocomplete();
+        });
+
+        function onEventTypeChanged() {
+            const eventType = document.getElementById('eventType').value;
+            const selectEl = document.getElementById('assignedGroupSelect');
+            selectEl.innerHTML = '';
+
+            const groups = EVENT_GROUPS[eventType] || EVENT_GROUPS["Трек день"];
+            groups.forEach(grp => {
+                const opt = document.createElement('option');
+                opt.value = grp;
+                opt.textContent = grp;
+                selectEl.appendChild(opt);
+            });
+
+            renderLogTable();
+        }
+
+        function onDateChanged() {
+            if (gasScriptUrl) {
+                fetchLogsFromGoogleSheet();
+            } else {
+                loadLocalLog();
+            }
+        }
+
+        function toggleSettings() {
+            const drawer = document.getElementById('settingsDrawer');
+            if (drawer) {
+                drawer.classList.toggle('open');
+            }
+        }
+
+        function saveGasUrl() {
+            gasScriptUrl = document.getElementById('gasUrlInput').value.trim();
+            localStorage.setItem('gas_script_url', gasScriptUrl);
+            if (gasScriptUrl) {
+                testConnection();
+            } else {
+                updateSyncStatus('offline', 'Автономно');
+            }
+        }
+
+        function updateSyncStatus(status, text) {
+            const badge = document.getElementById('syncStatus');
+            const icon = document.getElementById('syncIcon');
+            const txt = document.getElementById('syncText');
+            if (status === 'online') {
+                badge.style.background = '#14532d';
+                badge.style.borderColor = '#22c55e';
+                badge.style.color = '#4ade80';
+                icon.style.color = '#4ade80';
+                txt.textContent = text || 'Онлайн';
+            } else if (status === 'syncing') {
+                badge.style.background = '#7c2d12';
+                badge.style.borderColor = '#f97316';
+                badge.style.color = '#fdba74';
+                icon.style.color = '#fdba74';
+                txt.textContent = 'Связь...';
+            } else {
+                badge.style.background = '#334155';
+                badge.style.borderColor = '#64748b';
+                badge.style.color = '#94a3b8';
+                icon.style.color = '#94a3b8';
+                txt.textContent = text || 'Автономно';
+            }
+        }
+
+        function testConnection() {
+            if (!gasScriptUrl) {
+                alert('Пожалуйста, введите URL Google Apps Script в настройках!');
+                toggleSettings();
+                return;
+            }
+
+            updateSyncStatus('syncing', 'Проверка...');
+            const date = document.getElementById('eventDate').value;
+
+            fetch(`${gasScriptUrl}?date=${date}&ping=1`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.status === 'success') {
+                        updateSyncStatus('online', 'Онлайн (Таблица)');
+                        if (data.entries) {
+                            dailyLog = data.entries;
+                            renderLogTable();
+                        }
+                    } else {
+                        updateSyncStatus('offline', 'Ошибка ответа');
+                    }
+                })
+                .catch(err => {
+                    console.error('GAS connection error:', err);
+                    updateSyncStatus('offline', 'Ошибка связи');
+                    alert('Не удалось подключиться к Google Apps Script!\nПроверьте:\n1. URL заканчивается на /exec\n2. Права доступа установлены "Все" (Anyone)');
+                    loadLocalLog();
+                });
+        }
+
+        function normalizeString(str) {
+            let s = str.toLowerCase().trim();
+            for (let k in TRANSLIT_MAP) {
+                if (k.length > 2 && s.includes(k)) {
+                    s = s.replace(new RegExp(k, 'g'), TRANSLIT_MAP[k]);
+                }
+            }
+            let res = '';
+            for (let char of s) {
+                res += TRANSLIT_MAP[char] || char;
+            }
+            return res.replace(/[^a-z0-9]/g, '');
+        }
+
+        function setupAutocomplete() {
+            const input = document.getElementById('carInput');
+            const suggestionsEl = document.getElementById('suggestions');
+
+            if (!input || !suggestionsEl) return;
+
+            input.addEventListener('input', () => {
+                const val = input.value;
+                if (!val || val.length < 1) {
+                    suggestionsEl.style.display = 'none';
+                    return;
+                }
+
+                const queryNorm = normalizeString(val);
+                const rawLower = val.toLowerCase();
+                const currentEventType = document.getElementById('eventType').value;
+
+                const filtered = CAR_CATALOG.filter(item => {
+                    const brandNorm = normalizeString(item.brand);
+                    const brandLower = item.brand.toLowerCase();
+                    return brandLower.includes(rawLower) || brandNorm.includes(queryNorm);
+                });
+
+                if (filtered.length === 0) {
+                    const defaultGrp = currentEventType === "Соревнования" ? "S1600" : "C";
+                    suggestionsEl.innerHTML = `<div class="suggestion-item" onclick="selectCar('${val.replace(/'/g, "\'")}', '${defaultGrp}')">
+                        <div>➕ Добавить "${val}"</div>
+                        <span class="group-tag">${defaultGrp}</span>
+                    </div>`;
+                    suggestionsEl.style.display = 'block';
+                    return;
+                }
+
+                suggestionsEl.innerHTML = filtered.map(item => {
+                    let recommendedGroup = currentEventType === "Соревнования" ? item.comp_group : item.track_group;
+                    return `
+                        <div class="suggestion-item" onclick="selectCar('${item.brand.replace(/'/g, "\'")}', '${recommendedGroup}')">
+                            <div><strong>${item.brand}</strong></div>
+                            <span class="group-tag">${recommendedGroup}</span>
+                        </div>
+                    `;
+                }).join('');
+
+                suggestionsEl.style.display = 'block';
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!input.contains(e.target) && !suggestionsEl.contains(e.target)) {
+                    suggestionsEl.style.display = 'none';
+                }
+            });
+        }
+
+        function selectCar(brand, group) {
+            document.getElementById('carInput').value = brand;
+            document.getElementById('suggestions').style.display = 'none';
+            
+            const groupDisplay = document.getElementById('groupDisplay');
+            groupDisplay.textContent = group;
+
+            const selectEl = document.getElementById('assignedGroupSelect');
+            
+            let found = false;
+            for (let opt of selectEl.options) {
+                if (opt.value === group || opt.value.trim().toLowerCase() === group.trim().toLowerCase()) {
+                    selectEl.value = opt.value;
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                const newOpt = document.createElement('option');
+                newOpt.value = group;
+                newOpt.textContent = group;
+                selectEl.appendChild(newOpt);
+                selectEl.value = group;
+            }
+
+            document.getElementById('groupSourceNote').textContent = 'Определено автоматически';
+        }
+
+        function addCarToLog() {
+            const car = document.getElementById('carInput').value.trim();
+            const driver = document.getElementById('driverInput').value.trim();
+            const number = document.getElementById('numberInput').value.trim();
+            const color = document.getElementById('colorInput').value.trim();
+            const box = document.getElementById('boxInput').value.trim();
+            const group = document.getElementById('assignedGroupSelect').value;
+            const notes = document.getElementById('notesInput').value.trim();
+            const date = document.getElementById('eventDate').value;
+            const eventType = document.getElementById('eventType').value;
+
+            if (!car) {
+                alert('Пожалуйста, выберите или введите марку автомобиля!');
+                return;
+            }
+
+            const newItem = {
+                id: Date.now(),
+                date: date,
+                eventType: eventType,
+                car: car,
+                driver: driver,
+                number: number,
+                color: color,
+                box: box,
+                group: group,
+                notes: notes,
+                timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+            };
+
+            dailyLog.push(newItem);
+            renderLogTable();
+            clearInputs();
+
+            if (gasScriptUrl) {
+                syncCarToGoogleSheet(newItem);
+            } else {
+                saveLocalLog();
+            }
+        }
+
+        function clearInputs() {
+            document.getElementById('carInput').value = '';
+            document.getElementById('driverInput').value = '';
+            document.getElementById('numberInput').value = '';
+            document.getElementById('colorInput').value = '';
+            document.getElementById('boxInput').value = '';
+            document.getElementById('notesInput').value = '';
+            document.getElementById('groupDisplay').textContent = '—';
+        }
+
+        function renderLogTable() {
+            const tbody = document.getElementById('logTableBody');
+            const totalCarsCount = document.getElementById('totalCarsCount');
+
+            totalCarsCount.textContent = dailyLog.length;
+            document.getElementById('statTotal').textContent = dailyLog.length;
+
+            const eventType = document.getElementById('eventType').value;
+            if (eventType === "Соревнования") {
+                document.getElementById('statChip1').style.display = 'block';
+                document.getElementById('statChip1').childNodes[0].nodeValue = "S1600: ";
+                document.getElementById('statChip2').style.display = 'block';
+                document.getElementById('statChip2').childNodes[0].nodeValue = "TL: ";
+                document.getElementById('statChip3').style.display = 'block';
+                document.getElementById('statChip3').childNodes[0].nodeValue = "SP: ";
+
+                let s1600 = 0, tl = 0, sp = 0;
+                dailyLog.forEach(i => {
+                    if (i.group === "S1600") s1600++;
+                    else if (i.group === "TL" || i.group.includes("Туринг-Лайт")) tl++;
+                    else if (i.group === "SP" || i.group.includes("Супер-Продакшн")) sp++;
+                });
+                document.getElementById('statVal1').textContent = s1600;
+                document.getElementById('statVal2').textContent = tl;
+                document.getElementById('statVal3').textContent = sp;
+            } else {
+                document.getElementById('statChip1').style.display = 'block';
+                document.getElementById('statChip1').childNodes[0].nodeValue = "Группа A: ";
+                document.getElementById('statChip2').style.display = 'block';
+                document.getElementById('statChip2').childNodes[0].nodeValue = "Группа B: ";
+                document.getElementById('statChip3').style.display = 'block';
+                document.getElementById('statChip3').childNodes[0].nodeValue = "Группа C: ";
+
+                let a = 0, b = 0, c = 0;
+                dailyLog.forEach(i => {
+                    if (i.group === "A" || i.group.indexOf("A") !== -1 || i.group.indexOf("А") !== -1) a++;
+                    else if (i.group === "B" || i.group.indexOf("B") !== -1 || i.group.indexOf("В") !== -1) b++;
+                    else if (i.group === "C" || i.group.indexOf("C") !== -1 || i.group.indexOf("С") !== -1) c++;
+                });
+                document.getElementById('statVal1').textContent = a;
+                document.getElementById('statVal2').textContent = b;
+                document.getElementById('statVal3').textContent = c;
+            }
+
+            if (dailyLog.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-sub); padding: 20px;">Список на выбранную дату пока пуст</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = dailyLog.map((item, idx) => `
+                <tr>
+                    <td><strong>${item.rowNum || (idx + 1)}</strong></td>
+                    <td><strong>${item.car}</strong>${item.color ? `<br><small style="color: var(--text-sub)">${item.color}</small>` : ''}</td>
+                    <td>${item.driver || '—'}</td>
+                    <td><span style="background: #334155; padding: 2px 6px; border-radius: 4px; font-weight: bold;">${item.number ? '№' + item.number : 'б/н'}</span></td>
+                    <td><span class="group-tag">${item.group || '—'}</span></td>
+                    <td class="action-col"><button style="background: none; border: none; color: #ef4444; font-size: 16px; cursor: pointer;" onclick="deleteCar(${idx})">🗑️</button></td>
+                </tr>
+            `).join('');
+        }
+
+        function deleteCar(index) {
+            if (index < 0 || index >= dailyLog.length) return;
+            const item = dailyLog[index];
+            if (confirm(`Удалить ${item.car} (${item.driver}) из списка и Google Таблицы?`)) {
+                dailyLog.splice(index, 1);
+                renderLogTable();
+                saveLocalLog();
+
+                if (gasScriptUrl) {
+                    deleteCarFromGoogleSheet(item, index);
+                }
+            }
+        }
+
+        function deleteCarFromGoogleSheet(item, index) {
+            updateSyncStatus('syncing', 'Удаление...');
+            fetch(gasScriptUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({
+                    action: 'delete_entry',
+                    date: item.date,
+                    rowIndex: item.sheetRowIndex,
+                    car: item.car,
+                    driver: item.driver,
+                    number: item.number
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.status === 'success') {
+                    updateSyncStatus('online', 'Удалено из таблицы');
+                    fetchLogsFromGoogleSheet();
+                } else {
+                    updateSyncStatus('offline', 'Ошибка удаления');
+                }
+            })
+            .catch(err => {
+                console.error('Delete error:', err);
+                updateSyncStatus('offline', ' Ошибка сети');
+            });
+        }
+
+        function saveLocalLog() {
+            const date = document.getElementById('eventDate').value;
+            localStorage.setItem(`daily_ti_log_${date}`, JSON.stringify(dailyLog));
+        }
+
+        function loadLocalLog() {
+            const date = document.getElementById('eventDate').value;
+            const stored = localStorage.getItem(`daily_ti_log_${date}`);
+            if (stored) {
+                try {
+                    dailyLog = JSON.parse(stored);
+                    renderLogTable();
+                } catch (e) { dailyLog = []; }
+            } else {
+                dailyLog = [];
+                renderLogTable();
+            }
+        }
+
+        function shareParticipantList() {
+            const eventType = document.getElementById('eventType').value;
+            const eventDate = document.getElementById('eventDate').value;
+
+            if (dailyLog.length === 0) {
+                alert('Список участников пуст!');
+                return;
+            }
+
+            let text = `🏁 *СПИСОК УЧАСТНИКОВ ТИ* 🏁
+`;
+            text += `Мероприятие: ${eventType}
+`;
+            text += `Дата: ${eventDate}
+`;
+            text += `Всего авто: ${dailyLog.length}
+
+`;
+
+            dailyLog.forEach((item, index) => {
+                text += `${index + 1}. №${item.number || 'б/н'} | ${item.car} | ${item.driver || '—'} | ${item.group || '—'}
+`;
+            });
+
+            text += `
+⚡ Сформировано в приложении Техконтроль ТИ`;
+
+            if (navigator.share) {
+                navigator.share({
+                    title: `Список участников ТИ - ${eventDate}`,
+                    text: text
+                }).catch(err => {
+                    copyToClipboard(text);
+                });
+            } else {
+                copyToClipboard(text);
+            }
+        }
+
+        function exportToPDF() {
+            const eventType = document.getElementById('eventType').value;
+            const eventDate = document.getElementById('eventDate').value;
+
+            const parts = eventDate.split('-');
+            const formattedDate = parts.length === 3 ? `${parts[2]}.${parts[1]}.${parts[0]}` : eventDate;
+
+            document.getElementById('printHeaderMeta').textContent = `Мероприятие: ${eventType} | Дата: ${formattedDate} | Всего авто: ${dailyLog.length}`;
+            window.print();
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Список скопирован в буфер обмена! Можете вставить его в чат Рейс Контроля.');
+            }).catch(() => {
+                alert(text);
+            });
+        }
+
+        function syncCarToGoogleSheet(item) {
+            updateSyncStatus('syncing', 'Сохранение...');
+            fetch(gasScriptUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'add_entry', data: item })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data && data.status === 'success') {
+                    updateSyncStatus('online', 'Синхронизировано');
+                    fetchLogsFromGoogleSheet();
+                } else {
+                    updateSyncStatus('offline', 'Ошибка таблицы');
+                }
+            })
+            .catch(err => {
+                console.error('GAS POST sync error:', err);
+                updateSyncStatus('offline', 'Ошибка сети');
+                saveLocalLog();
+            });
+        }
+
+        function fetchLogsFromGoogleSheet() {
+            if (!gasScriptUrl) return;
+            const date = document.getElementById('eventDate').value;
+            updateSyncStatus('syncing', 'Загрузка...');
+            fetch(`${gasScriptUrl}?date=${date}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.status === 'success' && data.entries) {
+                        dailyLog = data.entries;
+                        renderLogTable();
+                        updateSyncStatus('online', 'Онлайн (Таблица)');
+                        saveLocalLog();
+                    }
+                })
+                .catch(err => {
+                    console.error('GAS GET fetch error:', err);
+                    updateSyncStatus('offline', 'Ошибка связи');
+                    loadLocalLog();
+                });
+        }
+    </script>
+</body>
+</html>
