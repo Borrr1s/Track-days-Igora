@@ -376,7 +376,7 @@
                 font-size: 9pt !important;
             }
 
-            /* HIDE UI ELEMENTS AND TITLES SPECIFIED IN USER SCREENSHOT */
+            /* HIDE UI ELEMENTS AND TITLES SPECIFIED BY USER */
             header, 
             .card-title, 
             .btn, 
@@ -388,7 +388,6 @@
             .filter-container, 
             .chips-container,
             .stats-bar,
-            /* Specifically hide the top cards in print */
             body > .card:nth-of-type(1),
             body > .card:nth-of-type(2) {
                 display: none !important;
@@ -483,7 +482,7 @@
                 <div class="subtitle">Приложение инспектора</div>
             </div>
         </div>
-        <div id="syncStatus" class="sync-badge" onclick="testConnection()">
+        <div id="syncStatus" class="sync-badge" onclick="resetPinAndConnect()">
             <span id="syncIcon">●</span> <span id="syncText">Проверить связь</span>
         </div>
     </header>
@@ -619,8 +618,6 @@
     </div>
 
     <script>
-        // EMBEDDED GOOGLE APPS SCRIPT DEPLOYMENT URL
-        // Вставьте сюда готовую ссылку вашего развернутого Google Apps Script Web App
         const EMBEDDED_GAS_URL = "https://script.google.com/macros/s/AKfycbzOiErNjoLsCi02UuWhaB3-cp5dftMJwc5pMNb9BJg5X5fjxNBmOvMoxsuxopmGyKGCAw/exec";
 
         const CAR_CATALOG = [
@@ -875,8 +872,29 @@
 
         let dailyLog = [];
         let selectedFormGroups = [];
-        let selectedFilterGroups = []; // Empty means ALL groups
+        let selectedFilterGroups = [];
         let gasScriptUrl = EMBEDDED_GAS_URL;
+
+        // PIN Code Storage Management
+        function getAppPin() {
+            let pin = localStorage.getItem('ti_app_pin');
+            if (!pin) {
+                pin = prompt("🔐 Введите ПИН-код контролера ТИ для доступа к Гугл-Таблице:");
+                if (pin) {
+                    pin = pin.trim();
+                    localStorage.setItem('ti_app_pin', pin);
+                }
+            }
+            return pin ? pin.trim() : "";
+        }
+
+        function resetPinAndConnect() {
+            let newPin = prompt("🔐 Введите новый ПИН-код доступа:");
+            if (newPin) {
+                localStorage.setItem('ti_app_pin', newPin.trim());
+                testConnection();
+            }
+        }
 
         document.addEventListener('DOMContentLoaded', () => {
             const today = new Date().toISOString().split('T')[0];
@@ -884,10 +902,10 @@
 
             onEventTypeChanged();
 
-            if (gasScriptUrl && !gasScriptUrl.includes('REPLACE_WITH_YOUR_ACTUAL_EXEC_URL')) {
+            if (gasScriptUrl) {
                 testConnection();
             } else {
-                updateSyncStatus('offline', 'Вставить URL в код');
+                updateSyncStatus('offline', 'Настроить URL');
                 loadLocalLog();
             }
 
@@ -898,7 +916,6 @@
             const eventType = document.getElementById('eventType').value;
             const groups = EVENT_GROUPS[eventType] || EVENT_GROUPS["Трек день"];
 
-            // 1. Form group chips
             const formChipsContainer = document.getElementById('groupChipsContainer');
             formChipsContainer.innerHTML = '';
             selectedFormGroups = [];
@@ -911,12 +928,10 @@
                 formChipsContainer.appendChild(chip);
             });
 
-            // 2. Table filter group chips (multi-select)
             const filterChipsContainer = document.getElementById('filterChipsContainer');
             filterChipsContainer.innerHTML = '';
-            selectedFilterGroups = []; // Default ALL
+            selectedFilterGroups = [];
 
-            // "ALL" Chip
             const allChip = document.createElement('div');
             allChip.className = 'group-chip active';
             allChip.textContent = 'Все группы';
@@ -985,7 +1000,7 @@
         }
 
         function onDateChanged() {
-            if (gasScriptUrl && !gasScriptUrl.includes('REPLACE_WITH_YOUR_ACTUAL_EXEC_URL')) {
+            if (gasScriptUrl) {
                 fetchLogsFromGoogleSheet();
             } else {
                 loadLocalLog();
@@ -1018,15 +1033,18 @@
         }
 
         function testConnection() {
-            if (!gasScriptUrl || gasScriptUrl.includes('REPLACE_WITH_YOUR_ACTUAL_EXEC_URL')) {
-                updateSyncStatus('offline', 'Вставить URL в код');
+            if (!gasScriptUrl) return;
+
+            const pin = getAppPin();
+            if (!pin) {
+                updateSyncStatus('offline', 'Введите ПИН');
                 return;
             }
 
             updateSyncStatus('syncing', 'Проверка...');
             const date = document.getElementById('eventDate').value;
 
-            fetch(`${gasScriptUrl}?date=${date}&ping=1`)
+            fetch(`${gasScriptUrl}?date=${date}&pin=${encodeURIComponent(pin)}&ping=1`)
                 .then(res => res.json())
                 .then(data => {
                     if (data && data.status === 'success') {
@@ -1035,6 +1053,10 @@
                             dailyLog = data.entries;
                             renderLogTable();
                         }
+                    } else if (data && data.status === 'error') {
+                        updateSyncStatus('offline', 'Неверный ПИН');
+                        alert('❌ ' + data.message);
+                        localStorage.removeItem('ti_app_pin');
                     } else {
                         updateSyncStatus('offline', 'Ошибка ответа');
                     }
@@ -1159,7 +1181,7 @@
             renderLogTable();
             clearInputs();
 
-            if (gasScriptUrl && !gasScriptUrl.includes('REPLACE_WITH_YOUR_ACTUAL_EXEC_URL')) {
+            if (gasScriptUrl) {
                 syncCarToGoogleSheet(newItem);
             } else {
                 saveLocalLog();
@@ -1180,7 +1202,6 @@
             const tbody = document.getElementById('logTableBody');
             const totalCarsCount = document.getElementById('totalCarsCount');
 
-            // Apply Multi-Group Filter
             let displayList = dailyLog;
 
             if (selectedFilterGroups.length > 0) {
@@ -1262,18 +1283,22 @@
                 renderLogTable();
                 saveLocalLog();
 
-                if (gasScriptUrl && !gasScriptUrl.includes('REPLACE_WITH_YOUR_ACTUAL_EXEC_URL')) {
+                if (gasScriptUrl) {
                     deleteCarFromGoogleSheet(item, index);
                 }
             }
         }
 
         function deleteCarFromGoogleSheet(item, index) {
+            const pin = getAppPin();
+            if (!pin) return;
+
             updateSyncStatus('syncing', 'Удаление...');
             fetch(gasScriptUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify({
+                    pin: pin,
                     action: 'delete_entry',
                     date: item.date,
                     rowIndex: item.sheetRowIndex,
@@ -1287,6 +1312,10 @@
                 if (data && data.status === 'success') {
                     updateSyncStatus('online', 'Удалено из таблицы');
                     fetchLogsFromGoogleSheet();
+                } else if (data && data.status === 'error') {
+                    alert('❌ ' + data.message);
+                    localStorage.removeItem('ti_app_pin');
+                    updateSyncStatus('offline', 'Неверный ПИН');
                 } else {
                     updateSyncStatus('offline', 'Ошибка удаления');
                 }
@@ -1387,17 +1416,24 @@
         }
 
         function syncCarToGoogleSheet(item) {
+            const pin = getAppPin();
+            if (!pin) return;
+
             updateSyncStatus('syncing', 'Сохранение...');
             fetch(gasScriptUrl, {
                 method: 'POST',
                 headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify({ action: 'add_entry', data: item })
+                body: JSON.stringify({ pin: pin, action: 'add_entry', data: item })
             })
             .then(res => res.json())
             .then(data => {
                 if (data && data.status === 'success') {
                     updateSyncStatus('online', 'Синхронизировано');
                     fetchLogsFromGoogleSheet();
+                } else if (data && data.status === 'error') {
+                    alert('❌ ' + data.message);
+                    localStorage.removeItem('ti_app_pin');
+                    updateSyncStatus('offline', 'Неверный ПИН');
                 } else {
                     updateSyncStatus('offline', 'Ошибка таблицы');
                 }
@@ -1410,10 +1446,14 @@
         }
 
         function fetchLogsFromGoogleSheet() {
-            if (!gasScriptUrl || gasScriptUrl.includes('REPLACE_WITH_YOUR_ACTUAL_EXEC_URL')) return;
+            if (!gasScriptUrl) return;
+
+            const pin = getAppPin();
+            if (!pin) return;
+
             const date = document.getElementById('eventDate').value;
             updateSyncStatus('syncing', 'Загрузка...');
-            fetch(`${gasScriptUrl}?date=${date}`)
+            fetch(`${gasScriptUrl}?date=${date}&pin=${encodeURIComponent(pin)}`)
                 .then(res => res.json())
                 .then(data => {
                     if (data && data.status === 'success' && data.entries) {
@@ -1421,6 +1461,10 @@
                         renderLogTable();
                         updateSyncStatus('online', 'Онлайн (Таблица)');
                         saveLocalLog();
+                    } else if (data && data.status === 'error') {
+                        alert('❌ ' + data.message);
+                        localStorage.removeItem('ti_app_pin');
+                        updateSyncStatus('offline', 'Неверный ПИН');
                     }
                 })
                 .catch(err => {
