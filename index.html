@@ -7,6 +7,7 @@
     <meta name="theme-color" content="#1e293b">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src https:; object-src 'none'; base-uri 'none'; frame-ancestors 'none';">
     <style>
         :root {
             --bg-color: #0f172a;
@@ -123,6 +124,7 @@
             flex-direction: column;
             gap: 5px;
             margin-bottom: 10px;
+            position: relative;
         }
 
         .form-group.full {
@@ -195,7 +197,6 @@
             border: 1px solid #0284c7;
         }
 
-        /* Multi-select chips */
         .chips-container {
             display: flex;
             flex-wrap: wrap;
@@ -361,7 +362,6 @@
             margin-bottom: 12px;
         }
 
-        /* PRINT / PDF STYLES */
         @media print {
             @page {
                 size: A4 portrait;
@@ -376,7 +376,6 @@
                 font-size: 9pt !important;
             }
 
-            /* HIDE UI ELEMENTS AND TITLES SPECIFIED BY USER */
             header, 
             .card-title, 
             .btn, 
@@ -401,7 +400,6 @@
                 margin: 0 !important;
             }
 
-            /* Compact printable header */
             .print-header {
                 display: block !important;
                 text-align: center;
@@ -442,7 +440,6 @@
                 font-weight: bold !important;
             }
 
-            /* Page break after every 25 rows for exactly 25 pilots per page */
             .log-table tbody tr:nth-child(25n) {
                 page-break-after: always !important;
                 break-after: page !important;
@@ -498,7 +495,9 @@
                 <label>Режим работы (Мероприятие):</label>
                 <select id="eventType" onchange="onEventTypeChanged()">
                     <option value="Трек день" selected>Трек день</option>
-                    <option value="Соревнования">Соревнования</option>
+                    <option value="Кольцо">Кольцо</option>
+                    <option value="Ралли-кросс">Ралли-кросс</option>
+                    <option value="Дрифт">Дрифт</option>
                 </select>
             </div>
             <div class="form-group">
@@ -514,7 +513,7 @@
 
         <div class="form-group full autocomplete-wrapper">
             <label>Поиск / Выбор автомобиля (марка, модель или транслит):</label>
-            <input type="text" id="carInput" placeholder="Например: Porsh, БМВ, Калина, Supra, GT4..." autocomplete="off">
+            <input type="text" id="carInput" placeholder="Например: Porsh, БМВ, Калина, Supra, ShortCut..." autocomplete="off">
             <div id="suggestions" class="suggestions-list"></div>
         </div>
 
@@ -531,9 +530,10 @@
                 <label>Пилот (Фамилия Имя):</label>
                 <input type="text" id="driverInput" placeholder="Иванов И.">
             </div>
-            <div class="form-group">
+            <div class="form-group" style="position: relative;">
                 <label>Стартовый № (СТ№):</label>
-                <input type="text" id="numberInput" placeholder="13">
+                <input type="text" id="numberInput" placeholder="13" autocomplete="off">
+                <div id="yesterdaySuggestions" class="suggestions-list"></div>
             </div>
             <div class="form-group">
                 <label>Цвет авто:</label>
@@ -544,7 +544,6 @@
                 <input type="text" id="boxInput" placeholder="15 бокс">
             </div>
             
-            <!-- Multi-group selection chips for input form -->
             <div class="form-group full">
                 <label>Выбранные Группы ТИ (можно выбрать несколько):</label>
                 <div id="groupChipsContainer" class="chips-container">
@@ -579,7 +578,6 @@
             </button>
         </div>
 
-        <!-- Filter Container with Multi-select Chips -->
         <div class="filter-container">
             <label>🔍 Фильтр отображения и печати по группам:</label>
             <div id="filterChipsContainer" class="chips-container">
@@ -621,241 +619,59 @@
         const EMBEDDED_GAS_URL = "https://script.google.com/macros/s/AKfycbzOiErNjoLsCi02UuWhaB3-cp5dftMJwc5pMNb9BJg5X5fjxNBmOvMoxsuxopmGyKGCAw/exec";
 
         const CAR_CATALOG = [
-  {
-    "brand": "GT4 AMG",
-    "track_group": "A",
-    "comp_group": "GT4"
-  },
-  {
-    "brand": "GT4 BMW M4",
-    "track_group": "A",
-    "comp_group": "GT4"
-  },
-  {
-    "brand": "GT4 Supra",
-    "track_group": "A",
-    "comp_group": "GT4"
-  },
-  {
-    "brand": "GT 4 Audi R8",
-    "track_group": "A",
-    "comp_group": "GT4"
-  },
-  {
-    "brand": "GT4 Porsche",
-    "track_group": "A",
-    "comp_group": "GT4"
-  },
-  {
-    "brand": "GT4 KTM X-Bow",
-    "track_group": "A",
-    "comp_group": "GT4"
-  },
-  {
-    "brand": "Porsche 911 carrera s",
-    "track_group": "A",
-    "comp_group": "GT4"
-  },
-  {
-    "brand": "Porsche cayman GTS",
-    "track_group": "A",
-    "comp_group": "GT4"
-  },
-  {
-    "brand": "BMW M4",
-    "track_group": "A",
-    "comp_group": "GT4"
-  },
-  {
-    "brand": "TCR Cupra",
-    "track_group": "A",
-    "comp_group": "TCR"
-  },
-  {
-    "brand": "TCR Elantra",
-    "track_group": "A",
-    "comp_group": "TCR"
-  },
-  {
-    "brand": "TCR Lada",
-    "track_group": "A",
-    "comp_group": "TCR"
-  },
-  {
-    "brand": "TCR Audi RS3 LMC",
-    "track_group": "A",
-    "comp_group": "TCR"
-  },
-  {
-    "brand": "TCR i30N",
-    "track_group": "A",
-    "comp_group": "TCR"
-  },
-  {
-    "brand": "BMW M2",
-    "track_group": "B",
-    "comp_group": "SP"
-  },
-  {
-    "brand": "Subaru Impreza WRX STI",
-    "track_group": "B",
-    "comp_group": "SP"
-  },
-  {
-    "brand": "Mitsubishi Lancer Evolution",
-    "track_group": "B",
-    "comp_group": "SP"
-  },
-  {
-    "brand": "Toyota GR Yaris",
-    "track_group": "B",
-    "comp_group": "SP"
-  },
-  {
-    "brand": "Ford Focus RS",
-    "track_group": "B",
-    "comp_group": "SP"
-  },
-  {
-    "brand": "VW Golf R",
-    "track_group": "B",
-    "comp_group": "SP"
-  },
-  {
-    "brand": "Honda S2000",
-    "track_group": "B",
-    "comp_group": "SP"
-  },
-  {
-    "brand": "Mazda MX-5",
-    "track_group": "C",
-    "comp_group": "TL"
-  },
-  {
-    "brand": "Honda Civic Type R",
-    "track_group": "C",
-    "comp_group": "TL"
-  },
-  {
-    "brand": "Renault Megane RS",
-    "track_group": "C",
-    "comp_group": "TL"
-  },
-  {
-    "brand": "Lada Granta Sport",
-    "track_group": "C",
-    "comp_group": "S1600"
-  },
-  {
-    "brand": "Kia Rio",
-    "track_group": "C",
-    "comp_group": "S1600"
-  },
-  {
-    "brand": "WV Polo",
-    "track_group": "C",
-    "comp_group": "S1600"
-  },
-  {
-    "brand": "Civic",
-    "track_group": "C",
-    "comp_group": "TL"
-  },
-  {
-    "brand": "SK Fabia",
-    "track_group": "C",
-    "comp_group": "S1600"
-  },
-  {
-    "brand": "Lada Kalina",
-    "track_group": "C",
-    "comp_group": "Юниор"
-  },
-  {
-    "brand": "Solaris",
-    "track_group": "C",
-    "comp_group": "S1600"
-  },
-  {
-    "brand": "Audi A1",
-    "track_group": "C",
-    "comp_group": "TL"
-  },
-  {
-    "brand": "Subaru BRZ",
-    "track_group": "C",
-    "comp_group": "SP"
-  },
-  {
-    "brand": "Lada Vesta",
-    "track_group": "C",
-    "comp_group": "S1600"
-  },
-  {
-    "brand": "Mini C",
-    "track_group": "C",
-    "comp_group": "TL"
-  },
-  {
-    "brand": "Renault Clio",
-    "track_group": "C",
-    "comp_group": "TL"
-  },
-  {
-    "brand": "Hyundai i30N",
-    "track_group": "C",
-    "comp_group": "TL"
-  },
-  {
-    "brand": "Toyota 86",
-    "track_group": "C",
-    "comp_group": "SP"
-  },
-  {
-    "brand": "Suzuki Swift Sport",
-    "track_group": "C",
-    "comp_group": "S1600"
-  },
-  {
-    "brand": "Peugeot 208 GTi",
-    "track_group": "C",
-    "comp_group": "TL"
-  },
-  {
-    "brand": "Ford Fiesta ST",
-    "track_group": "C",
-    "comp_group": "S1600"
-  },
-  {
-    "brand": "Short Cut",
-    "track_group": "B",
-    "comp_group": "Группа F"
-  },
-  {
-    "brand": "LMP 3",
-    "track_group": "A",
-    "comp_group": "Группа F"
-  },
-  {
-    "brand": "Midget / Миджет",
-    "track_group": "A",
-    "comp_group": "Группа F"
-  },
-  {
-    "brand": "CrossCar / Багги",
-    "track_group": "B",
-    "comp_group": "CrossCar"
-  },
-  {
-    "brand": "BMW E36 / E92 Drift",
-    "track_group": "B",
-    "comp_group": "Drift"
-  }
-];
+          {"brand": "GT4 AMG", "track_group": "A", "comp_group": "GT4"},
+          {"brand": "GT4 BMW M4", "track_group": "A", "comp_group": "GT4"},
+          {"brand": "GT4 Supra", "track_group": "A", "comp_group": "GT4"},
+          {"brand": "GT 4 Audi R8", "track_group": "A", "comp_group": "GT4"},
+          {"brand": "GT4 Porsche", "track_group": "A", "comp_group": "GT4"},
+          {"brand": "GT4 KTM X-Bow", "track_group": "A", "comp_group": "GT4"},
+          {"brand": "Porsche 911 carrera s", "track_group": "A", "comp_group": "GT4"},
+          {"brand": "Porsche cayman GTS", "track_group": "A", "comp_group": "GT4"},
+          {"brand": "BMW M4", "track_group": "A", "comp_group": "GT4"},
+          {"brand": "TCR Cupra", "track_group": "A", "comp_group": "TCR"},
+          {"brand": "TCR Elantra", "track_group": "A", "comp_group": "TCR"},
+          {"brand": "TCR Lada", "track_group": "A", "comp_group": "TCR"},
+          {"brand": "TCR Audi RS3 LMC", "track_group": "A", "comp_group": "TCR"},
+          {"brand": "TCR i30N", "track_group": "A", "comp_group": "TCR"},
+          {"brand": "BMW M2", "track_group": "B", "comp_group": "SP"},
+          {"brand": "Subaru Impreza WRX STI", "track_group": "B", "comp_group": "SP"},
+          {"brand": "Mitsubishi Lancer Evolution", "track_group": "B", "comp_group": "SP"},
+          {"brand": "Toyota GR Yaris", "track_group": "B", "comp_group": "SP"},
+          {"brand": "Ford Focus RS", "track_group": "B", "comp_group": "SP"},
+          {"brand": "VW Golf R", "track_group": "B", "comp_group": "SP"},
+          {"brand": "Honda S2000", "track_group": "B", "comp_group": "SP"},
+          {"brand": "Mazda MX-5", "track_group": "C", "comp_group": "TL"},
+          {"brand": "Honda Civic Type R", "track_group": "C", "comp_group": "TL"},
+          {"brand": "Renault Megane RS", "track_group": "C", "comp_group": "TL"},
+          {"brand": "Lada Granta Sport", "track_group": "C", "comp_group": "S1600"},
+          {"brand": "Kia Rio", "track_group": "C", "comp_group": "S1600"},
+          {"brand": "WV Polo", "track_group": "C", "comp_group": "S1600"},
+          {"brand": "Civic", "track_group": "C", "comp_group": "TL"},
+          {"brand": "SK Fabia", "track_group": "C", "comp_group": "S1600"},
+          {"brand": "Lada Kalina", "track_group": "C", "comp_group": "Юниор"},
+          {"brand": "Solaris", "track_group": "C", "comp_group": "S1600"},
+          {"brand": "Audi A1", "track_group": "C", "comp_group": "TL"},
+          {"brand": "Subaru BRZ", "track_group": "C", "comp_group": "SP"},
+          {"brand": "Lada Vesta", "track_group": "C", "comp_group": "S1600"},
+          {"brand": "Mini C", "track_group": "C", "comp_group": "TL"},
+          {"brand": "Renault Clio", "track_group": "C", "comp_group": "TL"},
+          {"brand": "Hyundai i30N", "track_group": "C", "comp_group": "TL"},
+          {"brand": "Toyota 86", "track_group": "C", "comp_group": "SP"},
+          {"brand": "Suzuki Swift Sport", "track_group": "C", "comp_group": "S1600"},
+          {"brand": "Peugeot 208 GTi", "track_group": "C", "comp_group": "TL"},
+          {"brand": "Ford Fiesta ST", "track_group": "C", "comp_group": "S1600"},
+          {"brand": "Short Cut", "track_group": "B", "comp_group": "ShortCut/CN"},
+          {"brand": "LMP 3", "track_group": "A", "comp_group": "Группа F"},
+          {"brand": "Midget / Миджет", "track_group": "A", "comp_group": "Группа F"},
+          {"brand": "CrossCar / Багги", "track_group": "B", "comp_group": "CrossCar"},
+          {"brand": "BMW E36 / E92 Drift", "track_group": "B", "comp_group": "Drift"}
+        ];
 
         const EVENT_GROUPS = {
             "Трек день": ["A", "B", "C", "Все", "Мастер-класс", "Рэйс-Такси"],
-            "Соревнования": ["S1600", "TL", "SP", "TCR", "GT4", "Юниор", "Д2Н", "Нац.", "CrossCar", "CC125", "CC85", "CC250", "Drift", "Группа F"]
+            "Кольцо": ["S1600", "TL", "SP", "TCR", "GT4", "ShortCut/CN", "Группа F", "Юниор"],
+            "Ралли-кросс": ["Национальный", "Юниор", "S1600", "Д2Н", "SuperAuto", "CrossCar", "CC85(Д3-мини)", "CC125(Д3-250)", "CC250+(Д3-Спринт)"],
+            "Дрифт": ["Drift", "DC1", "DC2", "DC3"]
         };
 
         const TRANSLIT_MAP = {
@@ -871,11 +687,27 @@
         };
 
         let dailyLog = [];
+        let yesterdayLog = []; // Log for previous consecutive calendar day
         let selectedFormGroups = [];
         let selectedFilterGroups = [];
         let gasScriptUrl = EMBEDDED_GAS_URL;
 
-        // PIN Code Storage Management
+        function escapeHtml(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function escapeForJsString(value) {
+            return String(value ?? '')
+                .replace(/\\/g, '\\\\')
+                .replace(/'/g, "\\'")
+                .replace(/"/g, '\\"');
+        }
+
         function getAppPin() {
             let pin = localStorage.getItem('ti_app_pin');
             if (!pin) {
@@ -896,6 +728,19 @@
             }
         }
 
+        function getPreviousDateStr(isoDateStr) {
+            if (!isoDateStr) return '';
+            const d = new Date(isoDateStr);
+            d.setDate(d.getDate() - 1);
+            return d.toISOString().split('T')[0];
+        }
+
+        function formatDisplayDate(isoDateStr) {
+            if (!isoDateStr) return '';
+            const parts = isoDateStr.split('-');
+            return parts.length === 3 ? `${parts[2]}.${parts[1]}` : isoDateStr;
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('eventDate').value = today;
@@ -910,6 +755,7 @@
             }
 
             setupAutocomplete();
+            setupNumberAutocomplete();
         });
 
         function onEventTypeChanged() {
@@ -1053,6 +899,8 @@
                             dailyLog = data.entries;
                             renderLogTable();
                         }
+                        // Also fetch yesterday's logs for auto-fill suggestion
+                        fetchYesterdayLogs();
                     } else if (data && data.status === 'error') {
                         updateSyncStatus('offline', 'Неверный ПИН');
                         alert('❌ ' + data.message);
@@ -1106,21 +954,22 @@
                 });
 
                 if (filtered.length === 0) {
-                    const defaultGrp = currentEventType === "Соревнования" ? "S1600" : "C";
-                    suggestionsEl.innerHTML = `<div class="suggestion-item" onclick="selectCar('${val.replace(/'/g, "\'")}', '${defaultGrp}')">
-                        <div>➕ Добавить "${val}"</div>
-                        <span class="group-tag">${defaultGrp}</span>
+                    const availableGroups = EVENT_GROUPS[currentEventType] || EVENT_GROUPS["Трек день"];
+                    const defaultGrp = availableGroups[0] || "C";
+                    suggestionsEl.innerHTML = `<div class="suggestion-item" onclick="selectCar('${escapeForJsString(val)}', '${escapeForJsString(defaultGrp)}')">
+                        <div>➕ Добавить "${escapeHtml(val)}"</div>
+                        <span class="group-tag">${escapeHtml(defaultGrp)}</span>
                     </div>`;
                     suggestionsEl.style.display = 'block';
                     return;
                 }
 
                 suggestionsEl.innerHTML = filtered.map(item => {
-                    let recommendedGroup = currentEventType === "Соревнования" ? item.comp_group : item.track_group;
+                    let recommendedGroup = currentEventType === "Трек день" ? item.track_group : item.comp_group;
                     return `
-                        <div class="suggestion-item" onclick="selectCar('${item.brand.replace(/'/g, "\'")}', '${recommendedGroup}')">
-                            <div><strong>${item.brand}</strong></div>
-                            <span class="group-tag">${recommendedGroup}</span>
+                        <div class="suggestion-item" onclick="selectCar('${escapeForJsString(item.brand)}', '${escapeForJsString(recommendedGroup)}')">
+                            <div><strong>${escapeHtml(item.brand)}</strong></div>
+                            <span class="group-tag">${escapeHtml(recommendedGroup)}</span>
                         </div>
                     `;
                 }).join('');
@@ -1133,6 +982,76 @@
                     suggestionsEl.style.display = 'none';
                 }
             });
+        }
+
+        // Setup autocomplete on starting number input (СТ№) matching yesterday's log
+        function setupNumberAutocomplete() {
+            const input = document.getElementById('numberInput');
+            const suggestionsEl = document.getElementById('yesterdaySuggestions');
+
+            if (!input || !suggestionsEl) return;
+
+            input.addEventListener('input', () => {
+                const val = input.value.trim();
+                if (!val || val.length < 1 || yesterdayLog.length === 0) {
+                    suggestionsEl.style.display = 'none';
+                    return;
+                }
+
+                // Match starting number from yesterday's log
+                const matches = yesterdayLog.filter(item => item.number && item.number.toString().trim() === val);
+
+                if (matches.length === 0) {
+                    suggestionsEl.style.display = 'none';
+                    return;
+                }
+
+                const currentDate = document.getElementById('eventDate').value;
+                const prevDateDisp = formatDisplayDate(getPreviousDateStr(currentDate));
+
+                suggestionsEl.innerHTML = matches.map((item, idx) => {
+                    const safeCar = escapeForJsString(item.car);
+                    const safeDriver = escapeForJsString(item.driver);
+                    const safeColor = escapeForJsString(item.color);
+                    const safeBox = escapeForJsString(item.box);
+                    const safeGroup = escapeForJsString(item.group);
+                    const safeNotes = escapeForJsString(item.notes);
+
+                    return `
+                        <div class="suggestion-item" onclick="applyYesterdayEntry('${safeCar}', '${safeDriver}', '${safeColor}', '${safeBox}', '${safeGroup}', '${safeNotes}')">
+                            <div>
+                                <small style="color: var(--accent-orange);">🔄 С вчера (${prevDateDisp}):</small><br>
+                                <strong>№${escapeHtml(item.number)}</strong> | ${escapeHtml(item.driver || 'Без имени')} | ${escapeHtml(item.car)}
+                            </div>
+                            <span class="group-tag">${escapeHtml(item.group || '—')}</span>
+                        </div>
+                    `;
+                }).join('');
+
+                suggestionsEl.style.display = 'block';
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!input.contains(e.target) && !suggestionsEl.contains(e.target)) {
+                    suggestionsEl.style.display = 'none';
+                }
+            });
+        }
+
+        function applyYesterdayEntry(car, driver, color, box, group, notes) {
+            document.getElementById('carInput').value = car;
+            document.getElementById('driverInput').value = driver;
+            document.getElementById('colorInput').value = color;
+            document.getElementById('boxInput').value = box;
+            document.getElementById('notesInput').value = notes;
+
+            if (group) {
+                const grpList = group.split(',').map(s => s.trim());
+                setSelectedGroups(grpList);
+            }
+
+            document.getElementById('yesterdaySuggestions').style.display = 'none';
+            document.getElementById('groupSourceNote').textContent = 'Заполнено из вчерашнего протокола';
         }
 
         function selectCar(brand, group) {
@@ -1216,59 +1135,51 @@
             document.getElementById('statTotal').textContent = dailyLog.length;
 
             const eventType = document.getElementById('eventType').value;
-            if (eventType === "Соревнования") {
-                document.getElementById('statChip1').style.display = 'block';
-                document.getElementById('statChip1').childNodes[0].nodeValue = "S1600: ";
-                document.getElementById('statChip2').style.display = 'block';
-                document.getElementById('statChip2').childNodes[0].nodeValue = "TL: ";
-                document.getElementById('statChip3').style.display = 'block';
-                document.getElementById('statChip3').childNodes[0].nodeValue = "SP: ";
+            const activeGroups = EVENT_GROUPS[eventType] || EVENT_GROUPS["Трек день"];
+            
+            const chip1Label = activeGroups[0] || '1';
+            const chip2Label = activeGroups[1] || '2';
+            const chip3Label = activeGroups[2] || '3';
 
-                let s1600 = 0, tl = 0, sp = 0;
-                dailyLog.forEach(i => {
-                    if (i.group && i.group.includes("S1600")) s1600++;
-                    else if (i.group && i.group.includes("TL")) tl++;
-                    else if (i.group && i.group.includes("SP")) sp++;
-                });
-                document.getElementById('statVal1').textContent = s1600;
-                document.getElementById('statVal2').textContent = tl;
-                document.getElementById('statVal3').textContent = sp;
-            } else {
-                document.getElementById('statChip1').style.display = 'block';
-                document.getElementById('statChip1').childNodes[0].nodeValue = "Группа A: ";
-                document.getElementById('statChip2').style.display = 'block';
-                document.getElementById('statChip2').childNodes[0].nodeValue = "Группа B: ";
-                document.getElementById('statChip3').style.display = 'block';
-                document.getElementById('statChip3').childNodes[0].nodeValue = "Группа C: ";
+            document.getElementById('statChip1').childNodes[0].nodeValue = `${chip1Label}: `;
+            document.getElementById('statChip2').childNodes[0].nodeValue = `${chip2Label}: `;
+            document.getElementById('statChip3').childNodes[0].nodeValue = `${chip3Label}: `;
 
-                let a = 0, b = 0, c = 0;
-                dailyLog.forEach(i => {
-                    if (!i.group) return;
-                    if (i.group.includes("A") || i.group.includes("А")) a++;
-                    if (i.group.includes("B") || i.group.includes("В")) b++;
-                    if (i.group.includes("C") || i.group.includes("С")) c++;
-                });
-                document.getElementById('statVal1').textContent = a;
-                document.getElementById('statVal2').textContent = b;
-                document.getElementById('statVal3').textContent = c;
-            }
+            let cnt1 = 0, cnt2 = 0, cnt3 = 0;
+            dailyLog.forEach(i => {
+                if (!i.group) return;
+                const gUpper = i.group.toUpperCase();
+                if (gUpper.includes(chip1Label.toUpperCase())) cnt1++;
+                else if (gUpper.includes(chip2Label.toUpperCase())) cnt2++;
+                else if (gUpper.includes(chip3Label.toUpperCase())) cnt3++;
+            });
+
+            document.getElementById('statVal1').textContent = cnt1;
+            document.getElementById('statVal2').textContent = cnt2;
+            document.getElementById('statVal3').textContent = cnt3;
 
             if (displayList.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-sub); padding: 20px;">
-                    ${selectedFilterGroups.length > 0 ? `Нет записей для выбранных групп (${selectedFilterGroups.join(', ')})` : 'Список на выбранную дату пока пуст'}
+                    ${selectedFilterGroups.length > 0 ? `Нет записей для выбранных групп (${selectedFilterGroups.map(escapeHtml).join(', ')})` : 'Список на выбранную дату пока пуст'}
                 </td></tr>`;
                 return;
             }
 
             tbody.innerHTML = displayList.map((item, idx) => {
                 const originalIndex = dailyLog.indexOf(item);
+                const rowNumber = escapeHtml(item.rowNum || (originalIndex + 1));
+                const carCell = escapeHtml(item.car);
+                const driverCell = escapeHtml(item.driver || '—');
+                const numberCell = escapeHtml(item.number ? '№' + item.number : 'б/н');
+                const groupCell = escapeHtml(item.group || '—');
+                const colorCell = item.color ? `<br><small style="color: var(--text-sub)">${escapeHtml(item.color)}</small>` : '';
                 return `
                     <tr>
-                        <td><strong>${item.rowNum || (originalIndex + 1)}</strong></td>
-                        <td><strong>${item.car}</strong>${item.color ? `<br><small style="color: var(--text-sub)">${item.color}</small>` : ''}</td>
-                        <td>${item.driver || '—'}</td>
-                        <td><span style="background: #334155; padding: 2px 6px; border-radius: 4px; font-weight: bold;">${item.number ? '№' + item.number : 'б/н'}</span></td>
-                        <td><span class="group-tag">${item.group || '—'}</span></td>
+                        <td><strong>${rowNumber}</strong></td>
+                        <td><strong>${carCell}</strong>${colorCell}</td>
+                        <td>${driverCell}</td>
+                        <td><span style="background: #334155; padding: 2px 6px; border-radius: 4px; font-weight: bold;">${numberCell}</span></td>
+                        <td><span class="group-tag">${groupCell}</span></td>
                         <td class="action-col"><button style="background: none; border: none; color: #ef4444; font-size: 16px; cursor: pointer;" onclick="deleteCar(${originalIndex})">🗑️</button></td>
                     </tr>
                 `;
@@ -1343,6 +1254,15 @@
                 dailyLog = [];
                 renderLogTable();
             }
+
+            // Load yesterday local log if available
+            const prevDate = getPreviousDateStr(date);
+            const prevStored = localStorage.getItem(`daily_ti_log_${prevDate}`);
+            if (prevStored) {
+                try { yesterdayLog = JSON.parse(prevStored); } catch(e) { yesterdayLog = []; }
+            } else {
+                yesterdayLog = [];
+            }
         }
 
         function shareParticipantList() {
@@ -1363,25 +1283,17 @@
                 return;
             }
 
-            let text = `🏁 *СПИСОК УЧАСТНИКОВ ТИ* 🏁
-`;
-            text += `Мероприятие: ${eventType}
-`;
-            text += `Дата: ${eventDate}
-`;
-            if (selectedFilterGroups.length > 0) text += `Фильтр по группам: ${selectedFilterGroups.join(', ')}
-`;
-            text += `Всего авто: ${exportList.length}
-
-`;
+            let text = `🏁 *СПИСОК УЧАСТНИКОВ ТИ* 🏁\n`;
+            text += `Мероприятие: ${eventType}\n`;
+            text += `Дата: ${eventDate}\n`;
+            if (selectedFilterGroups.length > 0) text += `Фильтр по группам: ${selectedFilterGroups.join(', ')}\n`;
+            text += `Всего авто: ${exportList.length}\n\n`;
 
             exportList.forEach((item, index) => {
-                text += `${index + 1}. №${item.number || 'б/н'} | ${item.car} | ${item.driver || '—'} | ${item.group || '—'}
-`;
+                text += `${index + 1}. №${item.number || 'б/н'} | ${item.car} | ${item.driver || '—'} | ${item.group || '—'}\n`;
             });
 
-            text += `
-⚡ Сформировано в приложении Техконтроль ТИ`;
+            text += `\n⚡ Сформировано в приложении Техконтроль ТИ`;
 
             if (navigator.share) {
                 navigator.share({
@@ -1471,6 +1383,29 @@
                     console.error('GAS GET fetch error:', err);
                     updateSyncStatus('offline', 'Ошибка связи');
                     loadLocalLog();
+                });
+
+            fetchYesterdayLogs();
+        }
+
+        function fetchYesterdayLogs() {
+            if (!gasScriptUrl) return;
+            const pin = getAppPin();
+            if (!pin) return;
+
+            const currentDate = document.getElementById('eventDate').value;
+            const prevDate = getPreviousDateStr(currentDate);
+            if (!prevDate) return;
+
+            fetch(`${gasScriptUrl}?date=${prevDate}&pin=${encodeURIComponent(pin)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data && data.status === 'success' && data.entries) {
+                        yesterdayLog = data.entries;
+                    }
+                })
+                .catch(err => {
+                    console.warn('Could not fetch yesterday logs:', err);
                 });
         }
     </script>
