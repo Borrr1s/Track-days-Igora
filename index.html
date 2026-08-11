@@ -7,6 +7,7 @@
     <meta name="theme-color" content="#1e293b">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src https:; object-src 'none'; base-uri 'none'; frame-ancestors 'none';">
     <style>
         :root {
             --bg-color: #0f172a;
@@ -376,7 +377,7 @@
                 font-size: 9pt !important;
             }
 
-            /* HIDE UI ELEMENTS AND TITLES SPECIFIED BY USER */
+            /* HIDE UI ELEMENTS AND TITLES */
             header, 
             .card-title, 
             .btn, 
@@ -442,7 +443,7 @@
                 font-weight: bold !important;
             }
 
-            /* Page break after every 25 rows for exactly 25 pilots per page */
+            /* Page break after every 25 rows */
             .log-table tbody tr:nth-child(25n) {
                 page-break-after: always !important;
                 break-after: page !important;
@@ -498,7 +499,9 @@
                 <label>Режим работы (Мероприятие):</label>
                 <select id="eventType" onchange="onEventTypeChanged()">
                     <option value="Трек день" selected>Трек день</option>
-                    <option value="Соревнования">Соревнования</option>
+                    <option value="Кольцо">Кольцо</option>
+                    <option value="Ралли-кросс">Ралли-кросс</option>
+                    <option value="Дрифт">Дрифт</option>
                 </select>
             </div>
             <div class="form-group">
@@ -514,7 +517,7 @@
 
         <div class="form-group full autocomplete-wrapper">
             <label>Поиск / Выбор автомобиля (марка, модель или транслит):</label>
-            <input type="text" id="carInput" placeholder="Например: Porsh, БМВ, Калина, Supra, GT4..." autocomplete="off">
+            <input type="text" id="carInput" placeholder="Например: Porsh, БМВ, Калина, Supra, ShortCut..." autocomplete="off">
             <div id="suggestions" class="suggestions-list"></div>
         </div>
 
@@ -829,7 +832,7 @@
   {
     "brand": "Short Cut",
     "track_group": "B",
-    "comp_group": "Группа F"
+    "comp_group": "ShortCut/CN"
   },
   {
     "brand": "LMP 3",
@@ -855,7 +858,9 @@
 
         const EVENT_GROUPS = {
             "Трек день": ["A", "B", "C", "Все", "Мастер-класс", "Рэйс-Такси"],
-            "Соревнования": ["S1600", "TL", "SP", "TCR", "GT4", "Юниор", "Д2Н", "Нац.", "CrossCar", "CC125", "CC85", "CC250", "Drift", "Группа F"]
+            "Кольцо": ["S1600", "TL", "SP", "TCR", "GT4", "ShortCut/CN", "Группа F", "Юниор"],
+            "Ралли-кросс": ["Национальный", "Юниор", "S1600", "Д2Н", "SuperAuto", "CrossCar", "CC85(Д3-мини)", "CC125(Д3-250)", "CC250+(Д3-Спринт)"],
+            "Дрифт": ["Drift", "DC1", "DC2", "DC3"]
         };
 
         const TRANSLIT_MAP = {
@@ -875,7 +880,22 @@
         let selectedFilterGroups = [];
         let gasScriptUrl = EMBEDDED_GAS_URL;
 
-        // PIN Code Storage Management
+        function escapeHtml(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function escapeForJsString(value) {
+            return String(value ?? '')
+                .replace(/\\/g, '\\\\')
+                .replace(/'/g, "\\'")
+                .replace(/"/g, '\\"');
+        }
+
         function getAppPin() {
             let pin = localStorage.getItem('ti_app_pin');
             if (!pin) {
@@ -1106,21 +1126,22 @@
                 });
 
                 if (filtered.length === 0) {
-                    const defaultGrp = currentEventType === "Соревнования" ? "S1600" : "C";
-                    suggestionsEl.innerHTML = `<div class="suggestion-item" onclick="selectCar('${val.replace(/'/g, "\'")}', '${defaultGrp}')">
-                        <div>➕ Добавить "${val}"</div>
-                        <span class="group-tag">${defaultGrp}</span>
+                    const availableGroups = EVENT_GROUPS[currentEventType] || EVENT_GROUPS["Трек день"];
+                    const defaultGrp = availableGroups[0] || "C";
+                    suggestionsEl.innerHTML = `<div class="suggestion-item" onclick="selectCar('${escapeForJsString(val)}', '${escapeForJsString(defaultGrp)}')">
+                        <div>➕ Добавить "${escapeHtml(val)}"</div>
+                        <span class="group-tag">${escapeHtml(defaultGrp)}</span>
                     </div>`;
                     suggestionsEl.style.display = 'block';
                     return;
                 }
 
                 suggestionsEl.innerHTML = filtered.map(item => {
-                    let recommendedGroup = currentEventType === "Соревнования" ? item.comp_group : item.track_group;
+                    let recommendedGroup = currentEventType === "Трек день" ? item.track_group : item.comp_group;
                     return `
-                        <div class="suggestion-item" onclick="selectCar('${item.brand.replace(/'/g, "\'")}', '${recommendedGroup}')">
-                            <div><strong>${item.brand}</strong></div>
-                            <span class="group-tag">${recommendedGroup}</span>
+                        <div class="suggestion-item" onclick="selectCar('${escapeForJsString(item.brand)}', '${escapeForJsString(recommendedGroup)}')">
+                            <div><strong>${escapeHtml(item.brand)}</strong></div>
+                            <span class="group-tag">${escapeHtml(recommendedGroup)}</span>
                         </div>
                     `;
                 }).join('');
@@ -1216,59 +1237,52 @@
             document.getElementById('statTotal').textContent = dailyLog.length;
 
             const eventType = document.getElementById('eventType').value;
-            if (eventType === "Соревнования") {
-                document.getElementById('statChip1').style.display = 'block';
-                document.getElementById('statChip1').childNodes[0].nodeValue = "S1600: ";
-                document.getElementById('statChip2').style.display = 'block';
-                document.getElementById('statChip2').childNodes[0].nodeValue = "TL: ";
-                document.getElementById('statChip3').style.display = 'block';
-                document.getElementById('statChip3').childNodes[0].nodeValue = "SP: ";
+            const activeGroups = EVENT_GROUPS[eventType] || EVENT_GROUPS["Трек день"];
+            
+            // Set dynamic stat chips based on active event mode
+            const chip1Label = activeGroups[0] || '1';
+            const chip2Label = activeGroups[1] || '2';
+            const chip3Label = activeGroups[2] || '3';
 
-                let s1600 = 0, tl = 0, sp = 0;
-                dailyLog.forEach(i => {
-                    if (i.group && i.group.includes("S1600")) s1600++;
-                    else if (i.group && i.group.includes("TL")) tl++;
-                    else if (i.group && i.group.includes("SP")) sp++;
-                });
-                document.getElementById('statVal1').textContent = s1600;
-                document.getElementById('statVal2').textContent = tl;
-                document.getElementById('statVal3').textContent = sp;
-            } else {
-                document.getElementById('statChip1').style.display = 'block';
-                document.getElementById('statChip1').childNodes[0].nodeValue = "Группа A: ";
-                document.getElementById('statChip2').style.display = 'block';
-                document.getElementById('statChip2').childNodes[0].nodeValue = "Группа B: ";
-                document.getElementById('statChip3').style.display = 'block';
-                document.getElementById('statChip3').childNodes[0].nodeValue = "Группа C: ";
+            document.getElementById('statChip1').childNodes[0].nodeValue = `${chip1Label}: `;
+            document.getElementById('statChip2').childNodes[0].nodeValue = `${chip2Label}: `;
+            document.getElementById('statChip3').childNodes[0].nodeValue = `${chip3Label}: `;
 
-                let a = 0, b = 0, c = 0;
-                dailyLog.forEach(i => {
-                    if (!i.group) return;
-                    if (i.group.includes("A") || i.group.includes("А")) a++;
-                    if (i.group.includes("B") || i.group.includes("В")) b++;
-                    if (i.group.includes("C") || i.group.includes("С")) c++;
-                });
-                document.getElementById('statVal1').textContent = a;
-                document.getElementById('statVal2').textContent = b;
-                document.getElementById('statVal3').textContent = c;
-            }
+            let cnt1 = 0, cnt2 = 0, cnt3 = 0;
+            dailyLog.forEach(i => {
+                if (!i.group) return;
+                const gUpper = i.group.toUpperCase();
+                if (gUpper.includes(chip1Label.toUpperCase())) cnt1++;
+                else if (gUpper.includes(chip2Label.toUpperCase())) cnt2++;
+                else if (gUpper.includes(chip3Label.toUpperCase())) cnt3++;
+            });
+
+            document.getElementById('statVal1').textContent = cnt1;
+            document.getElementById('statVal2').textContent = cnt2;
+            document.getElementById('statVal3').textContent = cnt3;
 
             if (displayList.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-sub); padding: 20px;">
-                    ${selectedFilterGroups.length > 0 ? `Нет записей для выбранных групп (${selectedFilterGroups.join(', ')})` : 'Список на выбранную дату пока пуст'}
+                    ${selectedFilterGroups.length > 0 ? `Нет записей для выбранных групп (${selectedFilterGroups.map(escapeHtml).join(', ')})` : 'Список на выбранную дату пока пуст'}
                 </td></tr>`;
                 return;
             }
 
             tbody.innerHTML = displayList.map((item, idx) => {
                 const originalIndex = dailyLog.indexOf(item);
+                const rowNumber = escapeHtml(item.rowNum || (originalIndex + 1));
+                const carCell = escapeHtml(item.car);
+                const driverCell = escapeHtml(item.driver || '—');
+                const numberCell = escapeHtml(item.number ? '№' + item.number : 'б/н');
+                const groupCell = escapeHtml(item.group || '—');
+                const colorCell = item.color ? `<br><small style="color: var(--text-sub)">${escapeHtml(item.color)}</small>` : '';
                 return `
                     <tr>
-                        <td><strong>${item.rowNum || (originalIndex + 1)}</strong></td>
-                        <td><strong>${item.car}</strong>${item.color ? `<br><small style="color: var(--text-sub)">${item.color}</small>` : ''}</td>
-                        <td>${item.driver || '—'}</td>
-                        <td><span style="background: #334155; padding: 2px 6px; border-radius: 4px; font-weight: bold;">${item.number ? '№' + item.number : 'б/н'}</span></td>
-                        <td><span class="group-tag">${item.group || '—'}</span></td>
+                        <td><strong>${rowNumber}</strong></td>
+                        <td><strong>${carCell}</strong>${colorCell}</td>
+                        <td>${driverCell}</td>
+                        <td><span style="background: #334155; padding: 2px 6px; border-radius: 4px; font-weight: bold;">${numberCell}</span></td>
+                        <td><span class="group-tag">${groupCell}</span></td>
                         <td class="action-col"><button style="background: none; border: none; color: #ef4444; font-size: 16px; cursor: pointer;" onclick="deleteCar(${originalIndex})">🗑️</button></td>
                     </tr>
                 `;
